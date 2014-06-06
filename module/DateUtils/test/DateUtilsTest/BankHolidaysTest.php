@@ -11,22 +11,15 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $serviceManager = new ServiceManager();
         $configs        = include('config/autoload/bankholidays.global.php');
 
-        $serviceManager->setService('config', $configs);
-
-        $this->bankHolidays = new BankHolidays($serviceManager, 2012);
+        $this->bankHolidays = new BankHolidays($configs, 2012);
     }
 
     public function testSetUpEmptyConfig()
     {
-        $serviceManager = new ServiceManager();
         $configs        = include('config/autoload/bankholidays.global.php');
-
-        $serviceManager->setService('config', $configs);
-
-        $bankHolidays = new BankHolidays($serviceManager, 2000);
+        $bankHolidays = new BankHolidays($configs, 2000);
         $bankHolidays = $bankHolidays->getBankHolidays();
 
         $this->assertEquals('2000-01-01', $bankHolidays['newYearsDay']);

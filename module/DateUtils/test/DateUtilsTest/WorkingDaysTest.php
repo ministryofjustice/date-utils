@@ -8,9 +8,17 @@ use DateUtils\WorkingDays;
 class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 {
 
+    protected $bankHolidays;
+
+    public function setUp()
+    {
+        $this->bankHolidays = include('config/autoload/bankholidays.global.php');
+    }
+
+
     public function testWorkingDaysNoArguments()
     {
-        $result = WorkingDays::workingDaysFrom();
+        $result = WorkingDays::workingDaysFrom($this->bankHolidays);
         $diff   = $result->diff(new \DateTime());
 
         $this->assertTrue($diff->days >= 1);
@@ -20,7 +28,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
     {
         $expected = \DateTime::createFromFormat('d/m/Y', '02/05/2014');
 
-        $result = WorkingDays::workingDaysFrom(\DateTime::createFromFormat('d/m/Y', '01/05/2014'), 1);
+        $result = WorkingDays::workingDaysFrom(
+            $this->bankHolidays,
+            \DateTime::createFromFormat('d/m/Y', '01/05/2014'),
+            1
+        );
 
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
     }
@@ -32,7 +44,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
     {
         $expected = \DateTime::createFromFormat('d/m/Y', '06/05/2014');
 
-        $result = WorkingDays::workingDaysFrom(\DateTime::createFromFormat('d/m/Y', '02/05/2014'), 1);
+        $result = WorkingDays::workingDaysFrom(
+            $this->bankHolidays,
+            \DateTime::createFromFormat('d/m/Y', '02/05/2014'),
+            1
+        );
 
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
     }
@@ -44,7 +60,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
     {
         $expected = \DateTime::createFromFormat('d/m/Y', '30/05/2014');
 
-        $result = WorkingDays::workingDaysFrom(\DateTime::createFromFormat('d/m/Y', '30/04/2014'), 20);
+        $result = WorkingDays::workingDaysFrom(
+            $this->bankHolidays,
+            \DateTime::createFromFormat('d/m/Y', '30/04/2014'),
+            20
+        );
 
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
     }
@@ -56,7 +76,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
     {
         $expected = \DateTime::createFromFormat('d/m/Y', '02/01/2014');
 
-        $result = WorkingDays::workingDaysFrom(\DateTime::createFromFormat('d/m/Y', '01/01/2014'), 1);
+        $result = WorkingDays::workingDaysFrom(
+            $this->bankHolidays,
+            \DateTime::createFromFormat('d/m/Y', '01/01/2014'),
+            1
+        );
 
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
     }

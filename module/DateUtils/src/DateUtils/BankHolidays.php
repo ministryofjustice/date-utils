@@ -20,12 +20,12 @@ final class BankHolidays
      */
     protected $bankHolidays;
 
-    public function __construct(ServiceLocatorInterface $sm, $year)
+    public function __construct($configArray, $year)
     {
         $this->bankHolidays = array_merge(
             self::calculateFixedHolidays($year),
-            (!empty($sm->get('config')['bankHolidays'][$year])) ?
-                $sm->get('config')['bankHolidays'][$year] :
+            (!empty($configArray['bankHolidays'][$year])) ?
+                $configArray['bankHolidays'][$year] :
                 array()
         );
     }
