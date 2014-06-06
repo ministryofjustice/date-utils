@@ -5,16 +5,16 @@ return array (
         array(
             '2012' =>
                 array(
-                    'newYearsDay'           => "02/01/2012",
-                    'queensDiamondJubilee'  => "05/06/2012"
+                    'newYearsDay'           => "2012-02-01",
+                    'queensDiamondJubilee'  => "2012-06-05"
                 ),
             '2015' =>
                 array(
-                    'boxingDay'             => '28/12/2012'
+                    'boxingDay'             => '2012-12-28'
                 ),
             '2016' =>
                 array(
-                    'xmasDay'               => '27/12/2012'
+                    'xmasDay'               => '2012-12-27'
                 )
         )
 );

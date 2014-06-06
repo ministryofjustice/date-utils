@@ -1,6 +1,6 @@
 <?php
 
-namespace DateUtilsTest\DateUtilsTest;
+namespace DateUtilsTest;
 
 
 use DateUtils\BankHolidays;
@@ -33,5 +33,8 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
     public function testGetBankHolidays()
     {
         $holidays = $this->bankHolidays->getBankHolidays();
+
+        $this->assertTrue(array_key_exists('queensDiamondJubilee', $holidays));
+        $this->assertEquals("2012-02-01", $holidays['newYearsDay']);
     }
 }
