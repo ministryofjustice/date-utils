@@ -21,16 +21,16 @@ class WorkingDays
 
         $dayCounter = 1;
         $currentDay = $initialDate->getTimestamp();
-        $holidays = self::getBankHolidays($initialDate->format('Y'));
+        $holidays   = self::getBankHolidays($initialDate->format('Y'));
 
         while ($dayCounter <= $workingDayOffset) {
 
-            $date = date('Y-m-d',$currentDay);
-            $currentDay = strtotime($date.' +1 day');
-            $date = date('Y-m-d',$currentDay);
-            $weekday = date('N',$currentDay);
+            $date       = date('Y-m-d', $currentDay);
+            $currentDay = strtotime($date . ' +1 day');
+            $date       = date('Y-m-d', $currentDay);
+            $weekday    = date('N', $currentDay);
 
-            if($weekday < 6 && !in_array($date, $holidays)) {
+            if ($weekday < 6 && !in_array($date, $holidays)) {
                 $dayCounter++;
             }
         }
