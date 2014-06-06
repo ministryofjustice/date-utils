@@ -11,10 +11,7 @@
     },
     "autoload" : {
         "psr-4" : {
-            "DateUtils\\" : "src/DateUtils"
-        },
-        "classmap": [
-            "Module.php"
-        ]
+            "DateUtils\\" : "module/DateUtils/src/DateUtils/"
+        }
     }
 }

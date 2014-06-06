@@ -1,20 +1,20 @@
 <?php
 
 return array (
-    'override'  =>
+    'bankHolidays'  =>
         array(
             '2012' =>
                 array(
-                    'newYearsDay'           => "02-01-2012",
-                    'queensDiamondJubilee'  => "05-06-2012"
+                    'newYearsDay'           => "02/01/2012",
+                    'queensDiamondJubilee'  => "05/06/2012"
                 ),
             '2015' =>
                 array(
-                    'boxingDay'             => '28-12-2012'
+                    'boxingDay'             => '28/12/2012'
                 ),
             '2016' =>
                 array(
-                    'xmasDay'               => '27-12-2012'
+                    'xmasDay'               => '27/12/2012'
                 )
         )
 );

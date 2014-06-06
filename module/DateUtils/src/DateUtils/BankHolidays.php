@@ -2,6 +2,8 @@
 
 namespace DateUtils;
 
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Class BankHolidays
  * @package DateUtils
@@ -18,12 +20,12 @@ final class BankHolidays
      */
     protected $bankHolidays;
 
-    public function __construct(ServiceManagerAwareInterface $sm, $year)
+    public function __construct(ServiceLocatorInterface $sm, $year)
     {
         $this->bankHolidays = array_merge(
-            $this->calculateFixedHolidays($year),
-            (is_array($sm->get('config')['override'][$year]))?
-                $sm->get('config')['override'][$year] :
+            self::calculateFixedHolidays($year),
+            (is_array($sm->get('config')['bankHolidays'][$year]))?
+                $sm->get('config')['bankHolidays'][$year] :
                 array()
         );
     }
@@ -32,7 +34,7 @@ final class BankHolidays
      * @param $year
      * @return array
      */
-    protected function calculateFixedHolidays($year)
+    public static function calculateFixedHolidays($year)
     {
         $bankHolidays['newYearsDay']   = date('d-m-Y', strtotime('first day of january ' .$year));
         $bankHolidays['goodFriday']    = date('d-m-Y', strtotime('previous friday', easter_date($year)));
