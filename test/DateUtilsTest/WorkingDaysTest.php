@@ -12,7 +12,7 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->bankHolidays = include('config/autoload/bankholidays.global.php');
+        $this->bankHolidays = include('config/module.config.php');
     }
 
 

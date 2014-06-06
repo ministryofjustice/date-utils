@@ -11,14 +11,14 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $configs        = include('config/autoload/bankholidays.global.php');
+        $configs        = include('config/module.config.php');
 
         $this->bankHolidays = new BankHolidays($configs, 2012);
     }
 
     public function testSetUpEmptyConfig()
     {
-        $configs        = include('config/autoload/bankholidays.global.php');
+        $configs        = include('config/module.config.php');
         $bankHolidays = new BankHolidays($configs, 2000);
         $bankHolidays = $bankHolidays->getBankHolidays();
 
