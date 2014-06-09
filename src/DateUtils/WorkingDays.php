@@ -9,12 +9,21 @@ namespace DateUtils;
 class WorkingDays
 {
     /**
-     * @param array     $config
+     * @var array
+     */
+    protected $config;
+
+    public function __construct(array $config)
+    {
+        $this->config =  $config;
+    }
+
+    /**
      * @param \DateTime $initialDate
      * @param int       $workingDayOffset
      * @return \DateTime
      */
-    public static function workingDaysFrom(array $config, \DateTime $initialDate = null, $workingDayOffset = 1)
+    public function workingDaysFrom(\DateTime $initialDate = null, $workingDayOffset = 1)
     {
         if (null === $initialDate) {
             $initialDate = new \DateTime();
@@ -22,7 +31,7 @@ class WorkingDays
 
         $dayCounter = 1;
         $currentDay = $initialDate->getTimestamp();
-        $holidays   = self::getBankHolidays($config, $initialDate->format('Y'));
+        $holidays   = $this->getBankHolidays($initialDate->format('Y'));
 
         while ($dayCounter <= $workingDayOffset) {
 
@@ -40,13 +49,12 @@ class WorkingDays
     }
 
     /**
-     * @param array $config
      * @param       $year
      * @return array
      */
-    protected static function getBankHolidays(array $config, $year)
+    protected function getBankHolidays($year)
     {
-        $bankHolidays = new BankHolidays($config, $year);
+        $bankHolidays = new BankHolidays($this->config, $year);
         return $bankHolidays->getBankHolidays();
     }
 }
