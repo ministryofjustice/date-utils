@@ -19,8 +19,7 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
     public function testWorkingDaysNoArguments()
     {
         $result = WorkingDays::workingDaysFrom($this->bankHolidays);
-        $diff   = $result->diff(new \DateTime());
-
+        $diff   = $result->diff(\DateTime::createFromFormat('d/m/Y h:i:s', date('d/m/Y 00:00:00')));
         $this->assertTrue($diff->days >= 1);
     }
 
