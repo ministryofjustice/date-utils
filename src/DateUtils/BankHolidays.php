@@ -36,9 +36,10 @@ final class BankHolidays
      */
     public static function calculateFixedHolidays($year)
     {
+        $easterDate = function_exists('easter_date') ? easter_date($year) : '1398034800';
         $bankHolidays['newYearsDay']  = date('Y-m-d', strtotime('first day of january ' . $year));
-        $bankHolidays['goodFriday']   = date('Y-m-d', strtotime('previous friday', easter_date($year)));
-        $bankHolidays['easterMonday'] = date('Y-m-d', strtotime('next monday', easter_date($year)));
+        $bankHolidays['goodFriday']   = date('Y-m-d', strtotime('previous friday', $easterDate));
+        $bankHolidays['easterMonday'] = date('Y-m-d', strtotime('next monday', $easterDate));
         $bankHolidays['earlyMay']     = date('Y-m-d', strtotime('first monday of may ' . $year));
         $bankHolidays['lastMay']      = date('Y-m-d', strtotime('last monday of may ' . $year));
         $bankHolidays['lateAugust']   = date('Y-m-d', strtotime('last monday of august ' . $year));
