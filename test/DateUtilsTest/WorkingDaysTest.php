@@ -18,6 +18,12 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $this->workingDays = new WorkingDays($this->bankHolidays);
     }
 
+    public function testWorkingDaysFromToday()
+    {
+        $result = $this->workingDays->workingDaysFromToday(1);
+        $diff   = $result->diff(\DateTime::createFromFormat('d/m/Y h:i:s', date('d/m/Y 00:00:00')));
+        $this->assertTrue($diff->days >= 1);
+    }
 
     public function testWorkingDaysNoArguments()
     {

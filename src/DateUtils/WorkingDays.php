@@ -49,6 +49,16 @@ class WorkingDays
     }
 
     /**
+     * Alias function to calculate days from today, which is the most common usage
+     * @param int $workingDayOffset
+     * @return \DateTime
+     */
+    public function workingDaysFromToday($workingDayOffset = 1)
+    {
+        return $this->workingDaysFrom(null, $workingDayOffset);
+    }
+
+    /**
      * @param       $year
      * @return array
      */
