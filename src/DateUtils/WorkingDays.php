@@ -37,6 +37,11 @@ class WorkingDays
 
             $date       = date('Y-m-d', $currentDay);
             $currentDay = strtotime($date . ' +1 day');
+
+            if (date('Y', $currentDay) != $initialDate->format('Y')) {
+                $holidays = $this->getBankHolidays(date('Y', $currentDay));
+            }
+
             $date       = date('Y-m-d', $currentDay);
             $weekday    = date('N', $currentDay);
 
