@@ -64,6 +64,34 @@ class WorkingDays
     }
 
     /**
+     * @param \DateTime $startDay
+     * @param \DateTime $endDay
+     * @return int
+     */
+    public function workingDaysBetween(\DateTime $startDay, \DateTime $endDay)
+    {
+        $holidays   = $this->getBankHolidays($startDay->format('Y'));
+        $weekDays   = range(1,5);
+
+        $interval = new \DateInterval('P1D');
+        $periods = new \DatePeriod($startDay, $interval, $endDay);
+
+        $days = 0;
+
+        foreach ($periods as $period) {
+
+            if($period->format('Y') != $startDay->format('Y')) {
+                $holidays   = $this->getBankHolidays($period->format('Y'));
+            }
+
+            if (!in_array($period->format('N'), $weekDays)) continue;
+            if (in_array($period->format('Y-m-d'), $holidays)) continue;
+            $days++;
+        }
+        return $days;
+    }
+
+    /**
      * @param       $year
      * @return array
      */
