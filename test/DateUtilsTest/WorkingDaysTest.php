@@ -89,7 +89,7 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
     }
 
-    public function testWorkingdDaysWrapYears()
+    public function testWorkingDaysWrapYears()
     {
         $expected = \DateTime::createFromFormat('d/m/Y', '07/01/2015');
 

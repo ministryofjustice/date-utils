@@ -55,7 +55,7 @@ class WorkingDays
 
     /**
      * Alias function to calculate days from today, which is the most common usage
-     * @param int $workingDayOffset
+     * @param int        $workingDayOffset
      * @return \DateTime
      */
     public function workingDaysFromToday($workingDayOffset = 1)
@@ -92,7 +92,7 @@ class WorkingDays
     }
 
     /**
-     * @param       $year
+     * @param  int   $year
      * @return array
      */
     protected function getBankHolidays($year)
