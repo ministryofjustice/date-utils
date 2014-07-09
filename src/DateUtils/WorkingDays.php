@@ -54,6 +54,34 @@ class WorkingDays
     }
 
     /**
+     * @param \DateTime     $initialDate
+     * @param \DateInterval $offset
+     * @return \DateTime
+     */
+    public function workingDaysFromOffset(\DateTime $initialDate = null, \DateInterval $offset)
+    {
+        return new \DateTime();
+    }
+
+    /**
+     * @param \DateTime $targetDate
+     * @return bool
+     */
+    public function isWorkingDay(\DateTime $targetDate)
+    {
+        $holidays   = $this->getBankHolidays($targetDate->format('Y'));
+        $weekDays   = range(1,5);
+
+
+        $workingDay = (
+            !in_array($targetDate->format('N'), $weekDays) ||
+            in_array($targetDate->format('Y-m-d'), $holidays)
+        );
+
+        return (bool) !$workingDay;
+    }
+
+    /**
      * Alias function to calculate days from today, which is the most common usage
      * @param int        $workingDayOffset
      * @return \DateTime

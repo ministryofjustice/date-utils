@@ -132,4 +132,20 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
             )
         );
     }
+
+    public function testIsWorkingDayReturnsFalse()
+    {
+        $expected = date('Y-m-d', strtotime('1 January'));
+        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+
+        $this->assertFalse($this->workingDays->isWorkingDay($expected));
+    }
+
+    public function testIsWorkingDayReturnsTrue()
+    {
+        $expected = date('Y-m-d', strtotime('first monday of February'));
+        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+
+        $this->assertTrue($this->workingDays->isWorkingDay($expected));
+    }
 }
