@@ -64,7 +64,9 @@ class WorkingDays
      */
     protected function workingDaysFromOffset(\DateTime $initialDate, \DateInterval $offset)
     {
-        $difference = (new \DateTime())->add($offset)->diff($initialDate);
+        $targetDate = new \DateTime($initialDate->format(\DateTime::ISO8601));
+        $diffDate = \DateTime::createFromFormat('Y-m-d h:i:s', $initialDate->format('Y-m-d 00:00:00'));
+        $difference = $targetDate->add($offset)->diff($diffDate);
 
         if($difference->days >= 1) {
             return $this->workingDaysFrom($initialDate, $difference->days);

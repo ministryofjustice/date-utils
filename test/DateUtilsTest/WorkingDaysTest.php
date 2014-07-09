@@ -10,6 +10,9 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     protected $bankHolidays;
 
+    /**
+     * @var WorkingDays
+     */
     protected $workingDays;
 
     public function setUp()
@@ -164,5 +167,15 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $result);
 
+    }
+
+
+    public function testWorkingDaysWithOffsetWraps()
+    {
+        $interval = 'PT1H';
+        $dateStamp = \DateTime::createFromFormat('d/m/Y H:i:s', '04/07/2014 23:00:59');
+
+        $expected = \DateTime::createFromFormat('d/m/Y H:i:s', '07/07/2014 00:00:00');
+        $this->assertEquals($expected, $this->workingDays->workingDaysFrom($dateStamp, $interval));
     }
 }
