@@ -18,6 +18,12 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $this->workingDays = new WorkingDays($this->bankHolidays);
     }
 
+    public function testWorkingDaysFromToday()
+    {
+        $result = $this->workingDays->workingDaysFromToday(1);
+        $diff   = $result->diff(\DateTime::createFromFormat('d/m/Y h:i:s', date('d/m/Y 00:00:00')));
+        $this->assertTrue($diff->days >= 1);
+    }
 
     public function testWorkingDaysNoArguments()
     {
@@ -81,5 +87,65 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
+    }
+
+    public function testWorkingDaysWrapYears()
+    {
+        $expected = \DateTime::createFromFormat('d/m/Y', '07/01/2015');
+
+        $result = $this->workingDays->workingDaysFrom(
+            \DateTime::createFromFormat('d/m/Y', '30/12/2014'),
+            5
+        );
+
+        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
+
+    }
+
+    public function testWorkingDaysBetween()
+    {
+        $expected = 5;
+
+        $this->assertEquals(
+            $expected,
+            $this->workingDays->workingDaysBetween(
+                \DateTime::createFromFormat('d/m/Y', '30/12/2014'),
+                \DateTime::createFromFormat('d/m/Y', '07/01/2015')
+            )
+        );
+    }
+
+    /**
+     * Will return 0 as we work on from the next working day on all our calculations, tomorrow is < 24 hours
+     */
+    public function testWorkingDaysTillTomorrow()
+    {
+        $expected = 0;
+
+        $today = new \DateTime();
+        $tomorrow = $today->modify('+1 day');
+        $this->assertEquals(
+            $expected,
+            $this->workingDays->workingDaysBetween(
+                $today,
+                $tomorrow
+            )
+        );
+    }
+
+    public function testIsWorkingDayReturnsFalse()
+    {
+        $expected = date('Y-m-d', strtotime('1 January'));
+        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+
+        $this->assertFalse($this->workingDays->isWorkingDay($expected));
+    }
+
+    public function testIsWorkingDayReturnsTrue()
+    {
+        $expected = date('Y-m-d', strtotime('first monday of February'));
+        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+
+        $this->assertTrue($this->workingDays->isWorkingDay($expected));
     }
 }

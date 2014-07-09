@@ -37,6 +37,11 @@ class WorkingDays
 
             $date       = date('Y-m-d', $currentDay);
             $currentDay = strtotime($date . ' +1 day');
+
+            if (date('Y', $currentDay) != $initialDate->format('Y')) {
+                $holidays = $this->getBankHolidays(date('Y', $currentDay));
+            }
+
             $date       = date('Y-m-d', $currentDay);
             $weekday    = date('N', $currentDay);
 
@@ -49,7 +54,73 @@ class WorkingDays
     }
 
     /**
-     * @param       $year
+     * @param \DateTime     $initialDate
+     * @param \DateInterval $offset
+     * @return \DateTime
+     */
+    public function workingDaysFromOffset(\DateTime $initialDate = null, \DateInterval $offset)
+    {
+        return new \DateTime();
+    }
+
+    /**
+     * @param \DateTime $targetDate
+     * @return bool
+     */
+    public function isWorkingDay(\DateTime $targetDate)
+    {
+        $holidays   = $this->getBankHolidays($targetDate->format('Y'));
+        $weekDays   = range(1,5);
+
+
+        $workingDay = (
+            !in_array($targetDate->format('N'), $weekDays) ||
+            in_array($targetDate->format('Y-m-d'), $holidays)
+        );
+
+        return (bool) !$workingDay;
+    }
+
+    /**
+     * Alias function to calculate days from today, which is the most common usage
+     * @param int        $workingDayOffset
+     * @return \DateTime
+     */
+    public function workingDaysFromToday($workingDayOffset = 1)
+    {
+        return $this->workingDaysFrom(null, $workingDayOffset);
+    }
+
+    /**
+     * @param \DateTime $startDay
+     * @param \DateTime $endDay
+     * @return int
+     */
+    public function workingDaysBetween(\DateTime $startDay, \DateTime $endDay)
+    {
+        $holidays   = $this->getBankHolidays($startDay->format('Y'));
+        $weekDays   = range(1,5);
+
+        $interval = new \DateInterval('P1D');
+        $periods = new \DatePeriod($startDay, $interval, $endDay);
+
+        $days = 0;
+
+        foreach ($periods as $period) {
+
+            if($period->format('Y') != $startDay->format('Y')) {
+                $holidays   = $this->getBankHolidays($period->format('Y'));
+            }
+
+            if (!in_array($period->format('N'), $weekDays)) continue;
+            if (in_array($period->format('Y-m-d'), $holidays)) continue;
+            $days++;
+        }
+        return $days;
+    }
+
+    /**
+     * @param  int   $year
      * @return array
      */
     protected function getBankHolidays($year)
