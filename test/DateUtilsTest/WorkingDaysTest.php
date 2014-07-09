@@ -148,4 +148,21 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->workingDays->isWorkingDay($expected));
     }
+
+    public function testWorkingDayOffset()
+    {
+        $expectedFromOffset = $this->workingDays->workingDaysFromToday('P10D');
+        $expected           = $this->workingDays->workingDaysFromToday(10);
+        $this->assertEquals($expected, $expectedFromOffset);
+    }
+
+    public function testWorkingDaysOffsetNoDate()
+    {
+        $interval = 'PT30M';
+        $expected = (new \DateTime())->add(new \DateInterval($interval));
+        $result = $this->workingDays->workingDaysFromToday($interval);
+
+        $this->assertEquals($expected, $result);
+
+    }
 }
