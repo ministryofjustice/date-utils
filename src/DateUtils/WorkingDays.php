@@ -22,6 +22,7 @@ class WorkingDays
      * @param \DateTime $initialDate
      * @param int       $workingDayOffset
      * @return \DateTime
+     * @throws \LogicException
      */
     public function workingDaysFrom(\DateTime $initialDate = null, $workingDayOffset = 1)
     {
@@ -29,38 +30,54 @@ class WorkingDays
             $initialDate = new \DateTime();
         }
 
-        $dayCounter = 1;
-        $currentDay = $initialDate->getTimestamp();
-        $holidays   = $this->getBankHolidays($initialDate->format('Y'));
+        if (is_int($workingDayOffset)) {
+            if ($workingDayOffset < 0) {
+                throw new \LogicException('Cannot calculate working days on a negative offset.');
+            }
+            $dayCounter = 1;
+            $currentDay = $initialDate->getTimestamp();
+            $holidays   = $this->getBankHolidays($initialDate->format('Y'));
 
-        while ($dayCounter <= $workingDayOffset) {
+            while ($dayCounter <= $workingDayOffset) {
 
-            $date       = date('Y-m-d', $currentDay);
-            $currentDay = strtotime($date . ' +1 day');
+                $date       = date('Y-m-d', $currentDay);
+                $currentDay = strtotime($date . ' +1 day');
 
-            if (date('Y', $currentDay) != $initialDate->format('Y')) {
-                $holidays = $this->getBankHolidays(date('Y', $currentDay));
+                if (date('Y', $currentDay) != $initialDate->format('Y')) {
+                    $holidays = $this->getBankHolidays(date('Y', $currentDay));
+                }
+
+                $date       = date('Y-m-d', $currentDay);
+                $weekday    = date('N', $currentDay);
+
+                if ($weekday < 6 && !in_array($date, $holidays)) {
+                    $dayCounter++;
+                }
             }
 
-            $date       = date('Y-m-d', $currentDay);
-            $weekday    = date('N', $currentDay);
-
-            if ($weekday < 6 && !in_array($date, $holidays)) {
-                $dayCounter++;
-            }
+            return $initialDate->setTimestamp($currentDay);
+        } else {
+            return $this->workingDaysFromOffset($initialDate, new \DateInterval($workingDayOffset));
         }
-
-        return $initialDate->setTimestamp($currentDay);
     }
 
     /**
+     * If the offset is greater than 1 day or it forces us to rollover convert it back to an int and call the
+     * other function
      * @param \DateTime     $initialDate
      * @param \DateInterval $offset
      * @return \DateTime
      */
-    public function workingDaysFromOffset(\DateTime $initialDate = null, \DateInterval $offset)
+    protected function workingDaysFromOffset(\DateTime $initialDate, \DateInterval $offset)
     {
-        return new \DateTime();
+        $targetDate = new \DateTime($initialDate->format(\DateTime::ISO8601));
+        $diffDate = \DateTime::createFromFormat('Y-m-d h:i:s', $initialDate->format('Y-m-d 00:00:00'));
+        $difference = $targetDate->add($offset)->diff($diffDate);
+
+        if($difference->days >= 1) {
+            return $this->workingDaysFrom($initialDate, $difference->days);
+        }
+        return (new \DateTime())->add($offset);
     }
 
     /**

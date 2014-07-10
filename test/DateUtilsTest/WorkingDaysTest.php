@@ -10,6 +10,9 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     protected $bankHolidays;
 
+    /**
+     * @var WorkingDays
+     */
     protected $workingDays;
 
     public function setUp()
@@ -147,5 +150,45 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $expected = \DateTime::createFromFormat('Y-m-d', $expected);
 
         $this->assertTrue($this->workingDays->isWorkingDay($expected));
+    }
+
+    public function testWorkingDayOffset()
+    {
+        $expectedFromOffset = $this->workingDays->workingDaysFromToday('P10D');
+        $expected           = $this->workingDays->workingDaysFromToday(10);
+        $this->assertEquals($expected, $expectedFromOffset);
+    }
+
+    public function testWorkingDaysOffsetNoDate()
+    {
+        $interval = 'PT30M';
+        $expected = (new \DateTime())->add(new \DateInterval($interval));
+        $result = $this->workingDays->workingDaysFromToday($interval);
+
+        $this->assertEquals($expected, $result);
+
+    }
+
+    public function testNegativeDays()
+    {
+        $offset = -1;
+        $expectedMessage = 'Cannot calculate working days on a negative offset.';
+
+        try {
+            $this->workingDays->workingDaysFromToday($offset);
+        }
+        catch(\Exception $e) {
+            $this->assertTrue($e instanceof \LogicException);
+            $this->assertEquals($expectedMessage, $e->getMessage());
+        }
+    }
+
+    public function testWorkingDaysWithOffsetWraps()
+    {
+        $interval = 'PT1H';
+        $dateStamp = \DateTime::createFromFormat('d/m/Y H:i:s', '04/07/2014 23:00:59');
+
+        $expected = \DateTime::createFromFormat('d/m/Y H:i:s', '07/07/2014 00:00:00');
+        $this->assertEquals($expected, $this->workingDays->workingDaysFrom($dateStamp, $interval));
     }
 }
