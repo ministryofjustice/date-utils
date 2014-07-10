@@ -22,6 +22,7 @@ class WorkingDays
      * @param \DateTime $initialDate
      * @param int       $workingDayOffset
      * @return \DateTime
+     * @throws \LogicException
      */
     public function workingDaysFrom(\DateTime $initialDate = null, $workingDayOffset = 1)
     {
@@ -30,6 +31,9 @@ class WorkingDays
         }
 
         if (is_int($workingDayOffset)) {
+            if ($workingDayOffset < 0) {
+                throw new \LogicException('Cannot calculate working days on a negative offset.');
+            }
             $dayCounter = 1;
             $currentDay = $initialDate->getTimestamp();
             $holidays   = $this->getBankHolidays($initialDate->format('Y'));
@@ -58,6 +62,8 @@ class WorkingDays
     }
 
     /**
+     * If the offset is greater than 1 day or it forces us to rollover convert it back to an int and call the
+     * other function
      * @param \DateTime     $initialDate
      * @param \DateInterval $offset
      * @return \DateTime

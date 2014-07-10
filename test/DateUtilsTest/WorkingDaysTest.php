@@ -169,6 +169,19 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testNegativeDays()
+    {
+        $offset = -1;
+        $expectedMessage = 'Cannot calculate working days on a negative offset.';
+
+        try {
+            $this->workingDays->workingDaysFromToday($offset);
+        }
+        catch(\Exception $e) {
+            $this->assertTrue($e instanceof \LogicException);
+            $this->assertEquals($expectedMessage, $e->getMessage());
+        }
+    }
 
     public function testWorkingDaysWithOffsetWraps()
     {
