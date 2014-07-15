@@ -77,7 +77,7 @@ class WorkingDays
         if($difference->days >= 1) {
             return $this->workingDaysFrom($initialDate, $difference->days);
         }
-        return (new \DateTime())->add($offset);
+        return $initialDate->add($offset);
     }
 
     /**
