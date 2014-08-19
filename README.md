@@ -9,7 +9,7 @@ holiday-dates
 
 Basic example
 
-```
+```php
 $Date = WorkingDays::workingDaysFrom(\DateTime::createFromFormat('d/m/Y', '01/01/2014'),1);
 
 //$Date will be set to 02/02/2014 which is the next working day after
