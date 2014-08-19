@@ -2,7 +2,7 @@ holiday-dates
 =============
 
 *todo
-  - [ ] Rename to DateUtils
+  - [x] Rename to DateUtils
   - [X] Calculate bank holidays for a given year
   - [X] Allow override mechanism via config
   - [X] Calculate x working days from given date
