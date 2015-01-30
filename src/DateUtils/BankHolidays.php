@@ -2,8 +2,6 @@
 
 namespace DateUtils;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Class BankHolidays
  * @package DateUtils

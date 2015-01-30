@@ -3,7 +3,6 @@
 namespace DateUtilsTest;
 
 use DateUtils\BankHolidays;
-use Zend\ServiceManager\ServiceManager;
 
 class BankHolidaysTest extends \PHPUnit_Framework_TestCase
 {
