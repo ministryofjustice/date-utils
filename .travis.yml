@@ -11,3 +11,5 @@ php:
   - 5.6
   - hhvm
 
+script:
+  - vendor/bin/phpunit -c test/phpunit.xml
