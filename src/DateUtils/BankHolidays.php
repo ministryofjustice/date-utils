@@ -53,34 +53,42 @@ final class BankHolidays
     {
         return $this->bankHolidays;
     }
+
+    /**
+     * @param int  $year
+     * @return int
+     */
+    public static function easterDate($year)
+    {
+        $goldenNumber = $year % 19;
+        $century = (int)($year / 100);
+
+        $lunarAge =
+            (int)($century - (int)($century / 4) -
+            (int)((8*$century+13) / 25) + 19 * $goldenNumber + 15) % 30;
+
+        $fullMoonOffset =
+            (int)$lunarAge -
+            (int)($lunarAge / 28) *
+            (1 - (int)($lunarAge / 28) * (int)(29 / ($lunarAge+ 1)) * ((int)(21 - $goldenNumber) / 11));
+
+        $weekday = ($year + (int)($year/4) + $fullMoonOffset + 2 - $century + (int)($century/4)) % 7;
+
+        $sundayOffset = $fullMoonOffset - $weekday;
+        $month = 3 + (int)(($sundayOffset + 40) / 44);
+        $day = $sundayOffset + 28 - 31 * ((int)($month / 4));
+
+        $easterTimeStamp = mktime(0,0,0, $month, $day, $year);
+
+        return $easterTimeStamp;
+    }
 }
 
+/**
+ * If we do not have the easter_date function defined, we can create our own, it is less efficient than raw C
+ */
 if (false === function_exists('easter_dates')) {
-    function easter_date ($Year) {
-
-        /*
-           G is the Golden Number-1
-          H is 23-Epact (modulo 30)
-         I is the number of days from 21 March to the Paschal full moon
-                    J is the weekday for the Paschal full moon (0=Sunday,
-                         1=Monday, etc.)
-                            L is the number of days from 21 March to the Sunday on or before
-                                 the Paschal full moon (a number between -6 and 28)
-                                    */
-
-
-        $G = $Year % 19;
-        $C = (int)($Year / 100);
-        $H = (int)($C - (int)($C / 4) - (int)((8*$C+13) / 25) + 19*$G + 15) % 30;
-        $I = (int)$H - (int)($H / 28)*(1 - (int)($H / 28)*(int)(29 / ($H + 1))*((int)(21 - $G) / 11));
-        $J = ($Year + (int)($Year/4) + $I + 2 - $C + (int)($C/4)) % 7;
-        $L = $I - $J;
-        $m = 3 + (int)(($L + 40) / 44);
-        $d = $L + 28 - 31 * ((int)($m / 4));
-        $y = $Year;
-        $E = mktime(0,0,0, $m, $d, $y);
-
-        return $E;
-
+    function easter_date ($year) {
+        return BankHolidays::easterDate($year);
     }
 }

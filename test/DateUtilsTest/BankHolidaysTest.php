@@ -42,4 +42,9 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists('queensDiamondJubilee', $holidays));
         $this->assertEquals("2012-02-01", $holidays['newYearsDay']);
     }
+
+    public function testEasterDate()
+    {
+        $this->assertEquals(BankHolidays::easterDate(2015), mktime(0, 0, 0, 4, 5, 2015));
+    }
 }
