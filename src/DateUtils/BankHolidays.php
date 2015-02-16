@@ -57,6 +57,8 @@ final class BankHolidays
     /**
      * @param int  $year
      * @return int
+     *
+     * @note see http://en.wikipedia.org/wiki/Computus
      */
     public static function easterDate($year)
     {

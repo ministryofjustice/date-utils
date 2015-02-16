@@ -45,6 +45,10 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
 
     public function testEasterDate()
     {
+        $this->assertEquals(BankHolidays::easterDate(2000), mktime(0, 0, 0, 4, 23, 2000));
+        $this->assertEquals(BankHolidays::easterDate(2005), mktime(0, 0, 0, 3, 27, 2005));
+        $this->assertEquals(BankHolidays::easterDate(2010), mktime(0, 0, 0, 4, 4, 2010));
         $this->assertEquals(BankHolidays::easterDate(2015), mktime(0, 0, 0, 4, 5, 2015));
+        $this->assertEquals(BankHolidays::easterDate(2020), mktime(0, 0, 0, 4, 12, 2020));
     }
 }
