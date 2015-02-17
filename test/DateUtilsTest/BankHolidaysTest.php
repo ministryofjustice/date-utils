@@ -51,4 +51,22 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(BankHolidays::easterDate(2015), mktime(0, 0, 0, 4, 5, 2015));
         $this->assertEquals(BankHolidays::easterDate(2020), mktime(0, 0, 0, 4, 12, 2020));
     }
+
+    public function testEasterDateRaisesWarningWhenANonNumberIsPassed()
+    {
+        $currentClass = $this;
+        $handler = set_error_handler(
+            function($errno, $errstring) use ($currentClass) {
+                $currentClass->assertEquals($errno, E_USER_WARNING);
+                $currentClass->assertEquals(
+                    $errstring,
+                    'easterDate expects parameter 1 to be long, string given on line 71'
+                );
+            }
+        );
+
+        $this->assertNull(BankHolidays::easterDate('invalidNumber'));
+
+        set_error_handler($handler);
+    }
 }

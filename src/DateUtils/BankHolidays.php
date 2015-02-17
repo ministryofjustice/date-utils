@@ -62,6 +62,20 @@ final class BankHolidays
      */
     public static function easterDate($year)
     {
+        //BC Behaviour
+        if (false === is_int($year)) {
+            $errorMessage = sprintf(
+                '%s %s %d',
+                __FUNCTION__,
+                'expects parameter 1 to be long, string given on line',
+                __LINE__
+            );
+
+            trigger_error($errorMessage, E_USER_WARNING);
+
+            return null;
+        }
+
         $goldenNumber = $year % 19;
         $century = (int)($year / 100);
 
