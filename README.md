@@ -1,11 +1,9 @@
-holiday-dates
+Date Utils
 =============
+[![Build Status](https://travis-ci.org/brettminnie/date-utils.svg?branch=travis-ci)](https://travis-ci.org/brettminnie/date-utils)
 
-*todo
-  - [x] Rename to DateUtils
-  - [X] Calculate bank holidays for a given year
-  - [X] Allow override mechanism via config
-  - [X] Calculate x working days from given date
+Allows for the easy calculation of working days between two points. Automatically generates UK bank holidays, these can
+be overridden via config
 
 Basic example
 

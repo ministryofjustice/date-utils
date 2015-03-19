@@ -152,4 +152,13 @@ class WorkingDays
 
         return $bankHolidays->getBankHolidays();
     }
+
+    /**
+     * @param \DateTime $endDay
+     * @return int
+     */
+    public function workingDaysUntil(\DateTime $endDay)
+    {
+        return $this->workingDaysBetween(new \DateTime(), $endDay);
+    }
 }
