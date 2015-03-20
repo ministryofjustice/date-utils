@@ -60,7 +60,7 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
                 $currentClass->assertEquals($errno, E_USER_WARNING);
                 $currentClass->assertEquals(
                     $errstring,
-                    'easterDate expects parameter 1 to be long, string given on line 71'
+                    'easterDate expects parameter 1 to be long, string given on line 74'
                 );
             }
         );

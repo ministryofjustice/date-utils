@@ -29,11 +29,14 @@ final class BankHolidays
     }
 
     /**
-     * @param $year
+     * @param int $year
      * @return array
      */
     public static function calculateFixedHolidays($year)
     {
+        $year = (int)$year;
+        $bankHolidays = array();
+
         $bankHolidays['newYearsDay'] = date('Y-m-d', strtotime('first day of january ' . $year));
         $bankHolidays['goodFriday'] = date('Y-m-d', strtotime('previous friday', easter_date($year)));
         $bankHolidays['easterMonday'] = date('Y-m-d', strtotime('next monday', easter_date($year)));
