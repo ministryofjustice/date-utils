@@ -9,7 +9,7 @@ namespace DateUtils;
 class Module
 {
     /**
-     * @param MvcEvent $e
+     * @param MvcEvent $event
      */
     public function onBootstrap(MvcEvent $event)
     {
