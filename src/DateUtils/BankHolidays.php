@@ -29,7 +29,7 @@ final class BankHolidays
     }
 
     /**
-     * @param $year
+     * @param int $year
      * @return array
      */
     public static function calculateFixedHolidays($year)
