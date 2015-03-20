@@ -1,6 +1,7 @@
 Date Utils
 =============
 [![Build Status](https://travis-ci.org/brettminnie/date-utils.svg?branch=travis-ci)](https://travis-ci.org/brettminnie/date-utils)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brettminnie/date-utils/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brettminnie/date-utils/?branch=master)
 
 Allows for the easy calculation of working days between two points. Automatically generates UK bank holidays, these can
 be overridden via config
