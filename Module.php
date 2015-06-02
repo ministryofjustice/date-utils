@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DateUtils;
 
 /**
@@ -10,11 +9,11 @@ namespace DateUtils;
 class Module
 {
     /**
-     * @param MvcEvent $e
+     * @param MvcEvent $event
      */
-    public function onBootstrap(MvcEvent $e)
+    public function onBootstrap(MvcEvent $event)
     {
-        $eventManager        = $e->getApplication()->getEventManager();
+        $eventManager = $event->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
 

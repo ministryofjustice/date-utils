@@ -191,4 +191,17 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $expected = \DateTime::createFromFormat('d/m/Y H:i:s', '07/07/2014 00:00:00');
         $this->assertEquals($expected, $this->workingDays->workingDaysFrom($dateStamp, $interval));
     }
+
+    public function testWorkingDaysUntil()
+    {
+        $startDay = new \DateTime();
+        $endDay = \DateTime::createFromFormat('d-m-Y', date('d-m-Y', strtotime('+ 2 days')));
+
+        $expectedOffset = $this->workingDays->workingDaysBetween($startDay, $endDay);
+
+        $this->assertEquals(
+            $expectedOffset,
+            $this->workingDays->workingDaysUntil($endDay)
+        );
+    }
 }
