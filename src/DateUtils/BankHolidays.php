@@ -92,19 +92,16 @@ final class BankHolidays
         \DateTime $date,
         array $other = null
     ) {
-        $specials = array();
         $holidays = self::getStandardBankHolidaysForDateTime($date);
         $year = $date->format('Y');
 
         if ($other !== null && is_array($other)) {
             if (isset($other[$year]) && is_array($other[$year])) {
-                foreach ($other[$year] as $name => $value) {
-                    $special = new \DateTime($value);
-                    if ($special->format('Y') == $year) {
-                        $specials[$name] = $special;
-                    }
-                }
-                $holidays = array_merge($holidays, $specials);
+                $holidays = self::mergeOtherToHolidaysForYear(
+                    $year,
+                    $other,
+                    $holidays
+                );
             }
         }
 
@@ -197,5 +194,33 @@ final class BankHolidays
             'xmasDay' => $xmasDay,
             'boxingDay' => $boxingDay
         );
+    }
+
+    /**
+     * Merges other specified holidays for the year specified into holidays
+     * array
+     *
+     * @param integer $year     Year for adding other holidays
+     * @param array   $other    Other holidays to add
+     * @param array   $holidays Existing holidays
+     *
+     * @access protected
+     * @return array<\DateTime>
+     */
+    protected static function mergeOtherToHolidaysForYear(
+        $year,
+        array $other,
+        array $holidays
+    ) {
+        $specials = array();
+
+        foreach ($other[$year] as $name => $value) {
+            $special = new \DateTime($value);
+            if ($special->format('Y') == $year) {
+                $specials[$name] = $special;
+            }
+        }
+
+        return array_merge($holidays, $specials);
     }
 }
