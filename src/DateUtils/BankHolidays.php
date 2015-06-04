@@ -86,23 +86,25 @@ final class BankHolidays
      * @param array     $other Array of years containing other special holidays
      *
      * @access public
+     * @static
      * @return array<\DateTime>
      */
     public static function getBankHolidaysForDateTime(
         \DateTime $date,
         array $other = null
     ) {
+        $specials = array();
         $holidays = self::getStandardBankHolidaysForDateTime($date);
         $year = $date->format('Y');
 
-        if ($other !== null && is_array($other)) {
-            if (isset($other[$year]) && is_array($other[$year])) {
-                $holidays = self::mergeOtherToHolidaysForYear(
-                    $year,
-                    $other,
-                    $holidays
-                );
+        if (isset($other[$year]) && is_array($other[$year])) {
+            foreach ($other[$year] as $name => $value) {
+                $special = new \DateTime($value);
+                if ($special->format('Y') == $year) {
+                    $specials[$name] = $special;
+                }
             }
+            $holidays = array_merge($holidays, $specials);
         }
 
         return $holidays;
@@ -112,9 +114,10 @@ final class BankHolidays
      * Returns array of easter dates as DateTime objects for the year
      * specified as a DateTime object
      *
-     * @param \DateTime $date
+     * @param \DateTime $date Any date in the year to get easter dates
      *
      * @access public
+     * @static
      * @return array<\DateTime>
      */
     public static function getEasterForDateTime(\DateTime $date)
@@ -137,9 +140,10 @@ final class BankHolidays
      * Returns array of standard bank holidays as DateTime objects for the year
      * specified as a DateTime object
      *
-     * @param \DateTime $date
+     * @param \DateTime $date Any date in the year to get bank holidays
      *
      * @access public
+     * @static
      * @return array<\DateTime>
      */
     public static function getStandardBankHolidaysForDateTime(\DateTime $date)
@@ -147,15 +151,7 @@ final class BankHolidays
         $newYearsDay = clone $date;
         $newYearsDay->modify('1 january');
 
-        switch ($newYearsDay->format('w')) {
-            case '0':
-                $newYearsDay->modify('2 january');
-                break;
-
-            case '6':
-                $newYearsDay->modify('3 january');
-                break;
-        }
+        self::shiftNewYearsDay($newYearsDay);
 
         $easter = self::getEasterForDateTime(clone $date);
 
@@ -169,20 +165,7 @@ final class BankHolidays
         $boxingDay = clone $date;
         $boxingDay->modify('26 december');
 
-        switch ($xmasDay->format('w')) {
-            case '0':
-                $xmasDay->modify('27 december');
-                break;
-
-            case '5':
-                $boxingDay->modify('28 december');
-                break;
-
-            case '6':
-                $xmasDay->modify('27 december');
-                $boxingDay->modify('28 december');
-                break;
-        }
+        self::shiftXmasAndBoxingDay($xmasDay, $boxingDay);
 
         return array(
             'newYearsDay' => $newYearsDay,
@@ -197,30 +180,55 @@ final class BankHolidays
     }
 
     /**
-     * Merges other specified holidays for the year specified into holidays
-     * array
+     * Shifts New Year's Day in the event that it falls on a weekend
      *
-     * @param integer $year     Year for adding other holidays
-     * @param array   $other    Other holidays to add
-     * @param array   $holidays Existing holidays
+     * @param \DateTime $newYearsDay New Year's Day
      *
      * @access protected
-     * @return array<\DateTime>
+     * @static
+     * @return null
      */
-    protected static function mergeOtherToHolidaysForYear(
-        $year,
-        array $other,
-        array $holidays
-    ) {
-        $specials = array();
+    protected static function shiftNewYearsDay(\DateTime $newYearsDay)
+    {
+        switch ($newYearsDay->format('w')) {
+            case '0':
+                $newYearsDay->modify('2 january');
+                break;
 
-        foreach ($other[$year] as $name => $value) {
-            $special = new \DateTime($value);
-            if ($special->format('Y') == $year) {
-                $specials[$name] = $special;
-            }
+            case '6':
+                $newYearsDay->modify('3 january');
+                break;
         }
+    }
 
-        return array_merge($holidays, $specials);
+    /**
+     * Shifts Xmas Day and/or Boxing Day in the event that either one falls on a
+     * weekend
+     *
+     * @param \DateTime $xmasDay   Xmas Day
+     * @param \DateTime $boxingDay Boxing Day
+     *
+     * @access protected
+     * @static
+     * @return null
+     */
+    protected static function shiftXmasAndBoxingDay(
+        \DateTime $xmasDay,
+        \DateTime $boxingDay
+    ) {
+        switch ($xmasDay->format('w')) {
+            case '0':
+                $xmasDay->modify('27 december');
+                break;
+
+            case '5':
+                $boxingDay->modify('28 december');
+                break;
+
+            case '6':
+                $xmasDay->modify('27 december');
+                $boxingDay->modify('28 december');
+                break;
+        }
     }
 }

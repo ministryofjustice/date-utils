@@ -125,7 +125,7 @@ class WorkingDays
      * @param integer   $offset Working days to count
      *
      * @access public
-     * @return integer
+     * @return \DateTime
      */
     public function workingDaysFromToday($offset = 1)
     {
@@ -140,7 +140,7 @@ class WorkingDays
      * @param \DateInterval $interval Interval to add to date
      *
      * @access public
-     * @return integer
+     * @return \DateTime
      */
     public function workingDaysFromWithInterval(
         \DateTime $date,
@@ -210,21 +210,51 @@ class WorkingDays
         $current = clone $date;
 
         while ($counter !== $offset) {
-            if ($offset < 0) {
-                $current->modify('-1 day');
-            } else {
-                $current->modify('+1 day');
-            }
+            $this->shiftDate($current, $offset);
 
             if ($this->isWorkingDay($current)) {
-                if ($offset < 0) {
-                    $counter--;
-                } else {
-                    $counter++;
-                }
+                $counter = $this->shiftCounter($counter, $offset);
             }
         }
 
         return $current;
+    }
+
+    /**
+     * Increments or decrements the counter depending on offset
+     *
+     * @param integer $counter Counter
+     * @param integer $offset  Working days to count
+     *
+     * @access protected
+     * @return integer
+     */
+    protected function shiftCounter($counter, $offset)
+    {
+        if ($offset < 0) {
+            $counter--;
+        } else {
+            $counter++;
+        }
+
+        return $counter;
+    }
+
+    /**
+     * Moves the date up or down by a day depending on offset
+     *
+     * @param \DateTime $date   Current date
+     * @param integer   $offset Working days to count
+     *
+     * @access protected
+     * @return null
+     */
+    protected function shiftDate(\DateTime $date, $offset)
+    {
+        if ($offset < 0) {
+            $date->modify('-1 day');
+        } else {
+            $date->modify('+1 day');
+        }
     }
 }
