@@ -72,8 +72,8 @@ class WorkingDays
     /**
      * Returns number of working days in England and Wales between two dates
      *
-     * @param \DateTime $date Start date
-     * @param \DateTime $date Finish date
+     * @param \DateTime $start  Start date
+     * @param \DateTime $finish Finish date
      *
      * @access public
      * @return integer
@@ -136,8 +136,8 @@ class WorkingDays
      * Returns the next working day in England and Wales from date specified
      * using date interval to calculate days ahead
      *
-     * @param \DateTime $date   Start date
-     * @param integer   $offset Working days to count
+     * @param \DateTime     $date     Start date
+     * @param \DateInterval $interval Interval to add to date
      *
      * @access public
      * @return integer
@@ -170,7 +170,7 @@ class WorkingDays
     /**
      * Returns number of working days in England and Wales until date specified
      *
-     * @param \DateTime $date Finish date
+     * @param \DateTime $finish Finish date
      *
      * @access public
      * @return integer

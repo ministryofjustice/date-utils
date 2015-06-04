@@ -9,6 +9,7 @@ nbproject
 INSTALL.txt
 LICENSE.txt
 README.txt
+build/
 demos/
 extras/documentation
 vendor/
