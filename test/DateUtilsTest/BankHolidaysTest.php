@@ -6,9 +6,7 @@ use DateUtils\BankHolidays;
 
 class BankHolidaysTest extends \PHPUnit_Framework_TestCase
 {
-    protected $bankHolidays;
-
-    public function testCalculateFixedHolidays()
+    public function testGetBankHolidaysForDateTime()
     {
         $holidays = BankHolidays::getBankHolidaysForDateTime(
             new \DateTime('2014-01-01')
@@ -25,67 +23,7 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(array_key_exists('boxingDay', $holidays));
     }
 
-    public function testSetUpEmptyConfig()
-    {
-        $config = include('config/module.config.php');
-        $bankHolidays = new BankHolidays($config, '2000');
-        $holidays = $bankHolidays->getBankHolidays();
-
-        $this->assertEquals('2000-01-03', $holidays['newYearsDay']);
-        $this->assertEquals('2000-12-25', $holidays['xmasDay']);
-    }
-
-    public function testGetBankHolidays()
-    {
-        $config = include('config/module.config.php');
-        $bankHolidays = new BankHolidays($config, '2012');
-        $holidays = $bankHolidays->getBankHolidays();
-
-        $this->assertTrue(array_key_exists('diamondJubilee', $holidays));
-        $this->assertEquals('2012-06-04', $holidays['spring']);
-        $this->assertEquals('2012-06-05', $holidays['diamondJubilee']);
-    }
-
-    public function testGetBankHolidaysFor2000()
-    {
-        $holidays = BankHolidays::getBankHolidaysForDateTime(
-            new \DateTime('2000-01-01')
-        );
-        $this->assertEquals(
-            '2000-01-03',
-            $holidays['newYearsDay']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-04-21',
-            $holidays['goodFriday']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-04-24',
-            $holidays['easterMonday']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-05-01',
-            $holidays['earlyMay']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-05-29',
-            $holidays['spring']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-08-28',
-            $holidays['summer']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-12-25',
-            $holidays['xmasDay']->format('Y-m-d')
-        );
-        $this->assertEquals(
-            '2000-12-26',
-            $holidays['boxingDay']->format('Y-m-d')
-        );
-    }
-
-    public function testGetBankHolidaysFor2005()
+    public function testGetBankHolidaysForDateTimeIn2005()
     {
         $holidays = BankHolidays::getBankHolidaysForDateTime(
             new \DateTime('2005-01-01')
@@ -124,7 +62,7 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testGetBankHolidaysFor2010()
+    public function testGetBankHolidaysForDateTimeIn2010()
     {
         $holidays = BankHolidays::getBankHolidaysForDateTime(
             new \DateTime('2010-01-01')
@@ -163,7 +101,7 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testGetBankHolidaysFor2015()
+    public function testGetBankHolidaysForDateTimeIn2015()
     {
         $holidays = BankHolidays::getBankHolidaysForDateTime(
             new \DateTime('2015-01-01')
@@ -200,6 +138,33 @@ class BankHolidaysTest extends \PHPUnit_Framework_TestCase
             '2015-12-28',
             $holidays['boxingDay']->format('Y-m-d')
         );
+    }
+
+    public function testGetBankHolidaysWithConfig()
+    {
+        $config = include('config/module.config.php');
+        $bankHolidays = new BankHolidays($config, '2012');
+        $holidays = $bankHolidays->getBankHolidays();
+
+        $this->assertTrue(array_key_exists('diamondJubilee', $holidays));
+        $this->assertEquals('2012-06-04', $holidays['spring']);
+        $this->assertEquals('2012-06-05', $holidays['diamondJubilee']);
+    }
+
+    public function testGetBankHolidaysWithEmptyConfig()
+    {
+        $config = include('config/module.config.php');
+        $bankHolidays = new BankHolidays($config, '2000');
+        $holidays = $bankHolidays->getBankHolidays();
+
+        $this->assertEquals('2000-01-03', $holidays['newYearsDay']);
+        $this->assertEquals('2000-04-21', $holidays['goodFriday']);
+        $this->assertEquals('2000-04-24', $holidays['easterMonday']);
+        $this->assertEquals('2000-05-01', $holidays['earlyMay']);
+        $this->assertEquals('2000-05-29', $holidays['spring']);
+        $this->assertEquals('2000-08-28', $holidays['summer']);
+        $this->assertEquals('2000-12-25', $holidays['xmasDay']);
+        $this->assertEquals('2000-12-26', $holidays['boxingDay']);
     }
 
     public function testGetEasterForDateTime()

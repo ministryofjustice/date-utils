@@ -1,18 +1,49 @@
 <?php
+/**
+ * Date Utils
+ *
+ * PHP version 5
+ *
+ * @package DateUtils
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version GIT: $Id$
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
+ */
 
 namespace DateUtils;
 
 /**
- * Class BankHolidays
- * @package DateUtils
+ * Bank holidays for England and Wales
+ *
+ * @package DateUtils\BankHolidays
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version Release: @package_version@
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
  */
 final class BankHolidays
 {
     /**
      * @var array
+     *
+     * @access protected
      */
     protected $holidays;
 
+    /**
+     * Sets-up bank holidays including others specified in the configuration
+     * array for the year specified
+     *
+     * @param array  $config Configuration array
+     * @param string $year   Year for obtaining bank holidays
+     *
+     * @access public
+     */
     public function __construct($config, $year)
     {
         $other = null;
@@ -28,8 +59,12 @@ final class BankHolidays
     }
 
     /**
+     * Returns array of bank holidays in format specified for the year
+     * configured by the constructor
+     *
      * @param string $format
      *
+     * @access public
      * @return array
      */
     public function getBankHolidays($format = 'Y-m-d')
@@ -44,9 +79,13 @@ final class BankHolidays
     }
 
     /**
+     * Returns array of bank holidays including others specified in the array as
+     * DateTime objects for the year and specified as a DateTime object
+     *
      * @param \DateTime $date  Any date in the year to get bank holidays
      * @param array     $other Array of years containing other special holidays
      *
+     * @access public
      * @return array<\DateTime>
      */
     public static function getBankHolidaysForDateTime(
@@ -73,8 +112,37 @@ final class BankHolidays
     }
 
     /**
+     * Returns array of easter dates as DateTime objects for the year
+     * specified as a DateTime object
+     *
      * @param \DateTime $date
      *
+     * @access public
+     * @return array<\DateTime>
+     */
+    public static function getEasterForDateTime(\DateTime $date)
+    {
+        $date->modify('21 march')->modify(
+            '+' . easter_days($date->format('Y')) . ' days'
+        );
+
+        $goodFriday = clone $date;
+        $easterMonday = clone $date;
+
+        return array(
+            'goodFriday' => $goodFriday->modify('previous friday'),
+            'easterSunday' => $date,
+            'easterMonday' => $easterMonday->modify('next monday')
+        );
+    }
+
+    /**
+     * Returns array of standard bank holidays as DateTime objects for the year
+     * specified as a DateTime object
+     *
+     * @param \DateTime $date
+     *
+     * @access public
      * @return array<\DateTime>
      */
     public static function getStandardBankHolidaysForDateTime(\DateTime $date)
@@ -128,27 +196,6 @@ final class BankHolidays
             'summer' => $summer->modify('last monday of august'),
             'xmasDay' => $xmasDay,
             'boxingDay' => $boxingDay
-        );
-    }
-
-    /**
-     * @param \DateTime $date
-     *
-     * @return array<\DateTime>
-     */
-    public static function getEasterForDateTime(\DateTime $date)
-    {
-        $date->modify('21 march')->modify(
-            '+' . easter_days($date->format('Y')) . ' days'
-        );
-
-        $goodFriday = clone $date;
-        $easterMonday = clone $date;
-
-        return array(
-            'goodFriday' => $goodFriday->modify('previous friday'),
-            'easterSunday' => $date,
-            'easterMonday' => $easterMonday->modify('next monday')
         );
     }
 }

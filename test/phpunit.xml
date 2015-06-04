@@ -11,9 +11,13 @@
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./../src</directory>
+            <directory suffix=".php">../src</directory>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-html" target="../build/coverage"/>
+        <log type="coverage-clover" target="../build/coverage.xml"/>
+    </logging>
     <php>
         <server name="SERVER_NAME" value="phpunit"/>
         <server name="APPLICATION_ENV" value="development"/>
