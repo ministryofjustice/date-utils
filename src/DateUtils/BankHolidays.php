@@ -97,7 +97,7 @@ final class BankHolidays
 
         if ($other !== null && is_array($other)) {
             if (isset($other[$year]) && is_array($other[$year])) {
-                $holidays = $this->mergeOtherToHolidaysForYear(
+                $holidays = self::mergeOtherToHolidaysForYear(
                     $year,
                     $other,
                     $holidays
@@ -207,7 +207,7 @@ final class BankHolidays
      * @access protected
      * @return array<\DateTime>
      */
-    protected function mergeOtherToHolidaysForYear(
+    protected static function mergeOtherToHolidaysForYear(
         $year,
         array $other,
         array $holidays
