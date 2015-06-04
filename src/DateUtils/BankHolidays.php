@@ -1,114 +1,201 @@
 <?php
+/**
+ * Date Utils
+ *
+ * PHP version 5
+ *
+ * @package DateUtils
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version GIT: $Id$
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
+ */
 
 namespace DateUtils;
 
 /**
- * Class BankHolidays
- * @package DateUtils
+ * Bank holidays for England and Wales
+ *
+ * @package DateUtils\BankHolidays
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version Release: @package_version@
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
  */
 final class BankHolidays
 {
     /**
-     * @var string
+     * @var array
+     *
+     * @access protected
      */
-    protected $year;
+    protected $holidays;
 
     /**
-     * @var array
+     * Sets-up bank holidays including others specified in the configuration
+     * array for the year specified
+     *
+     * @param array  $config Configuration array
+     * @param string $year   Year for obtaining bank holidays
+     *
+     * @access public
      */
-    protected $bankHolidays;
-
-    public function __construct($configArray, $year)
+    public function __construct($config, $year)
     {
-        $this->bankHolidays = array_merge(
-            self::calculateFixedHolidays($year),
-            (!empty($configArray['bankHolidays'][$year])) ?
-                $configArray['bankHolidays'][$year] :
-                array()
+        $other = null;
+
+        if (isset($config['bankHolidays'])) {
+            $other = $config['bankHolidays'];
+        }
+
+        $this->holidays = self::getBankHolidaysForDateTime(
+            new \DateTime($year . '-01-01'),
+            $other
         );
     }
 
     /**
-     * @param int $year
-     * @return array
-     */
-    public static function calculateFixedHolidays($year)
-    {
-        $year = (int)$year;
-        $bankHolidays = array();
-
-        $bankHolidays['newYearsDay'] = date('Y-m-d', strtotime('first day of january ' . $year));
-        $bankHolidays['goodFriday'] = date('Y-m-d', strtotime('previous friday', easter_date($year)));
-        $bankHolidays['easterMonday'] = date('Y-m-d', strtotime('next monday', easter_date($year)));
-        $bankHolidays['earlyMay'] = date('Y-m-d', strtotime('first monday of may ' . $year));
-        $bankHolidays['lastMay'] = date('Y-m-d', strtotime('last monday of may ' . $year));
-        $bankHolidays['lateAugust'] = date('Y-m-d', strtotime('last monday of august ' . $year));
-        $bankHolidays['xmasDay'] = date('Y-m-d', strtotime('25 december ' . $year));
-        $bankHolidays['boxingDay'] = date('Y-m-d', strtotime('26 december ' . $year));
-
-        return $bankHolidays;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBankHolidays()
-    {
-        return $this->bankHolidays;
-    }
-
-    /**
-     * @param int $year
-     * @return int
+     * Returns array of bank holidays in format specified for the year
+     * configured by the constructor
      *
-     * @note see http://en.wikipedia.org/wiki/Computus
+     * @param string $format
+     *
+     * @access public
+     * @return array
      */
-    public static function easterDate($year)
+    public function getBankHolidays($format = 'Y-m-d')
     {
-        //BC Behaviour
-        if (false === is_int($year)) {
-            $errorMessage = sprintf(
-                '%s %s %d',
-                __FUNCTION__,
-                'expects parameter 1 to be long, string given on line',
-                __LINE__
-            );
+        $holidays = $this->holidays;
 
-            trigger_error($errorMessage, E_USER_WARNING);
-
-            return null;
+        foreach ($holidays as $name => $date) {
+            $holidays[$name] = $date->format($format);
         }
 
-        $goldenNumber = $year % 19;
-        $century = (int)($year / 100);
-
-        $lunarAge =
-            (int)($century - (int)($century / 4) -
-                (int)((8 * $century + 13) / 25) + 19 * $goldenNumber + 15) % 30;
-
-        $fullMoonOffset =
-            (int)$lunarAge -
-            (int)($lunarAge / 28) *
-            (1 - (int)($lunarAge / 28) * (int)(29 / ($lunarAge + 1)) * ((int)(21 - $goldenNumber) / 11));
-
-        $weekday = ($year + (int)($year / 4) + $fullMoonOffset + 2 - $century + (int)($century / 4)) % 7;
-
-        $sundayOffset = $fullMoonOffset - $weekday;
-        $month = 3 + (int)(($sundayOffset + 40) / 44);
-        $day = $sundayOffset + 28 - 31 * ((int)($month / 4));
-
-        $easterTimeStamp = mktime(0, 0, 0, $month, $day, $year);
-
-        return $easterTimeStamp;
+        return $holidays;
     }
-}
 
-/**
- * If we do not have the easter_date function defined, we can create our own, it is less efficient than raw C
- */
-if (false === function_exists('easter_dates')) {
-    function easter_date($year)
+    /**
+     * Returns array of bank holidays including others specified in the array as
+     * DateTime objects for the year and specified as a DateTime object
+     *
+     * @param \DateTime $date  Any date in the year to get bank holidays
+     * @param array     $other Array of years containing other special holidays
+     *
+     * @access public
+     * @return array<\DateTime>
+     */
+    public static function getBankHolidaysForDateTime(
+        \DateTime $date,
+        array $other = null
+    ) {
+        $specials = array();
+        $holidays = self::getStandardBankHolidaysForDateTime($date);
+        $year = $date->format('Y');
+
+        if ($other !== null && is_array($other)) {
+            if (isset($other[$year]) && is_array($other[$year])) {
+                foreach ($other[$year] as $name => $value) {
+                    $special = new \DateTime($value);
+                    if ($special->format('Y') == $year) {
+                        $specials[$name] = $special;
+                    }
+                }
+                $holidays = array_merge($holidays, $specials);
+            }
+        }
+
+        return $holidays;
+    }
+
+    /**
+     * Returns array of easter dates as DateTime objects for the year
+     * specified as a DateTime object
+     *
+     * @param \DateTime $date
+     *
+     * @access public
+     * @return array<\DateTime>
+     */
+    public static function getEasterForDateTime(\DateTime $date)
     {
-        return BankHolidays::easterDate($year);
+        $date->modify('21 march')->modify(
+            '+' . easter_days($date->format('Y')) . ' days'
+        );
+
+        $goodFriday = clone $date;
+        $easterMonday = clone $date;
+
+        return array(
+            'goodFriday' => $goodFriday->modify('previous friday'),
+            'easterSunday' => $date,
+            'easterMonday' => $easterMonday->modify('next monday')
+        );
+    }
+
+    /**
+     * Returns array of standard bank holidays as DateTime objects for the year
+     * specified as a DateTime object
+     *
+     * @param \DateTime $date
+     *
+     * @access public
+     * @return array<\DateTime>
+     */
+    public static function getStandardBankHolidaysForDateTime(\DateTime $date)
+    {
+        $newYearsDay = clone $date;
+        $newYearsDay->modify('1 january');
+
+        switch ($newYearsDay->format('w')) {
+            case '0':
+                $newYearsDay->modify('2 january');
+                break;
+
+            case '6':
+                $newYearsDay->modify('3 january');
+                break;
+        }
+
+        $easter = self::getEasterForDateTime(clone $date);
+
+        $earlyMay = clone $date;
+        $spring = clone $date;
+        $summer = clone $date;
+
+        $xmasDay = clone $date;
+        $xmasDay->modify('25 december');
+
+        $boxingDay = clone $date;
+        $boxingDay->modify('26 december');
+
+        switch ($xmasDay->format('w')) {
+            case '0':
+                $xmasDay->modify('27 december');
+                break;
+
+            case '5':
+                $boxingDay->modify('28 december');
+                break;
+
+            case '6':
+                $xmasDay->modify('27 december');
+                $boxingDay->modify('28 december');
+                break;
+        }
+
+        return array(
+            'newYearsDay' => $newYearsDay,
+            'goodFriday' => $easter['goodFriday'],
+            'easterMonday' => $easter['easterMonday'],
+            'earlyMay' => $earlyMay->modify('first monday of may'),
+            'spring' => $spring->modify('last monday of may'),
+            'summer' => $summer->modify('last monday of august'),
+            'xmasDay' => $xmasDay,
+            'boxingDay' => $boxingDay
+        );
     }
 }

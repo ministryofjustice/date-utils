@@ -1,149 +1,191 @@
 <?php
+/**
+ * Date Utils
+ *
+ * PHP version 5
+ *
+ * @package DateUtils
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version GIT: $Id$
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
+ */
 
 namespace DateUtils;
 
 /**
- * Class WorkingDays
- * @package DateUtils
+ * Working days for England and Wales
+ *
+ * @package DateUtils\WorkingDays
+ * @author  Brett Minnie
+ * @author  Eddie Abou-Jaoude
+ * @author  Dave Nash <dave.nash@teaandcode.com>
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @version Release: @package_version@
+ * @link    https://github.com/ministryofjustice/date-utils Date Utils
  */
 class WorkingDays
 {
     /**
      * @var array
+     *
+     * @access protected
      */
     protected $config;
 
+    /**
+     * Sets-up configuration array
+     *
+     * @param array $config Configuration array
+     *
+     * @access public
+     */
     public function __construct(array $config)
     {
         $this->config = $config;
     }
 
     /**
-     * @param \DateTime $initialDate
-     * @param int $workingDayOffset
-     * @return \DateTime
-     * @throws \LogicException
+     * Returns whether date is a working day in England and Wales
+     *
+     * @param \DateTime $date Date to check
+     *
+     * @access public
+     * @return boolean
      */
-    public function workingDaysFrom(\DateTime $initialDate = null, $workingDayOffset = 1)
+    public function isWorkingDay(\DateTime $date)
     {
-        if (null === $initialDate) {
-            $initialDate = new \DateTime();
+        $holidays = $this->getBankHolidays($date->format('Y'));
+
+        $day = intval($date->format('N'));
+        $string = $date->format('Y-m-d');
+
+        if ($day < 6 && !in_array($string, $holidays)) {
+            return true;
         }
 
-        if (is_int($workingDayOffset)) {
-            if ($workingDayOffset < 0) {
-                throw new \LogicException('Cannot calculate working days on a negative offset.');
-            }
-            $dayCounter = 1;
-            $currentDay = $initialDate->getTimestamp();
-            $holidays = $this->getBankHolidays($initialDate->format('Y'));
-
-            while ($dayCounter <= $workingDayOffset) {
-
-                $date = date('Y-m-d', $currentDay);
-                $currentDay = strtotime($date . ' +1 day');
-
-                if (date('Y', $currentDay) != $initialDate->format('Y')) {
-                    $holidays = $this->getBankHolidays(date('Y', $currentDay));
-                }
-
-                $date = date('Y-m-d', $currentDay);
-                $weekday = date('N', $currentDay);
-
-                if ($weekday < 6 && !in_array($date, $holidays)) {
-                    $dayCounter++;
-                }
-            }
-
-            return $initialDate->setTimestamp($currentDay);
-        } else {
-            return $this->workingDaysFromOffset($initialDate, new \DateInterval($workingDayOffset));
-        }
+        return false;
     }
 
     /**
-     * If the offset is greater than 1 day or it forces us to rollover convert it back to an int and call the
-     * other function
-     * @param \DateTime $initialDate
-     * @param \DateInterval $offset
-     * @return \DateTime
+     * Returns number of working days in England and Wales between two dates
+     *
+     * @param \DateTime $date Start date
+     * @param \DateTime $date Finish date
+     *
+     * @access public
+     * @return integer
      */
-    protected function workingDaysFromOffset(\DateTime $initialDate, \DateInterval $offset)
+    public function workingDaysBetween(\DateTime $start, \DateTime $finish)
     {
-        $targetDate = new \DateTime($initialDate->format(\DateTime::ISO8601));
-        $diffDate = \DateTime::createFromFormat('Y-m-d h:i:s', $initialDate->format('Y-m-d 00:00:00'));
-        $difference = $targetDate->add($offset)->diff($diffDate);
-
-        if ($difference->days >= 1) {
-            return $this->workingDaysFrom($initialDate, $difference->days);
-        }
-
-        return $initialDate->add($offset);
-    }
-
-    /**
-     * @param \DateTime $targetDate
-     * @return bool
-     */
-    public function isWorkingDay(\DateTime $targetDate)
-    {
-        $holidays = $this->getBankHolidays($targetDate->format('Y'));
-        $weekDays = range(1, 5);
-
-
-        $workingDay = (
-            !in_array($targetDate->format('N'), $weekDays) ||
-            in_array($targetDate->format('Y-m-d'), $holidays)
-        );
-
-        return (bool)!$workingDay;
-    }
-
-    /**
-     * Alias function to calculate days from today, which is the most common usage
-     * @param int $workingDayOffset
-     * @return \DateTime
-     */
-    public function workingDaysFromToday($workingDayOffset = 1)
-    {
-        return $this->workingDaysFrom(null, $workingDayOffset);
-    }
-
-    /**
-     * @param \DateTime $startDay
-     * @param \DateTime $endDay
-     * @return int
-     */
-    public function workingDaysBetween(\DateTime $startDay, \DateTime $endDay)
-    {
-        $holidays = $this->getBankHolidays($startDay->format('Y'));
-        $weekDays = range(1, 5);
-
         $interval = new \DateInterval('P1D');
-        $periods = new \DatePeriod($startDay, $interval, $endDay);
+        $period = new \DatePeriod($start, $interval, $finish);
 
-        $days = 0;
+        $counter = 0;
 
-        foreach ($periods as $period) {
-
-            if ($period->format('Y') != $startDay->format('Y')) {
-                $holidays = $this->getBankHolidays($period->format('Y'));
+        foreach ($period as $current) {
+            if ($this->isWorkingDay($current)) {
+                $counter++;
             }
-
-            if (!in_array($period->format('N'), $weekDays)) {
-                continue;
-            }
-            if (in_array($period->format('Y-m-d'), $holidays)) {
-                continue;
-            }
-            $days++;
         }
 
-        return $days;
+        return $counter;
     }
 
     /**
-     * @param  int $year
+     * Returns the offset working day in England and Wales from date specified
+     *
+     * @param \DateTime $date   Start date
+     * @param integer   $offset Working days to count
+     *
+     * @access public
+     * @return \DateTime
+     */
+    public function workingDaysFrom(\DateTime $date = null, $offset = 1)
+    {
+        if ($date === null) {
+            $date = new \DateTime();
+        }
+
+        if (!is_int($offset)) {
+            return $this->workingDaysFromWithInterval(
+                $date,
+                new \DateInterval($offset)
+            );
+        }
+
+        return $this->getWorkingDayFromDateWithOffset($date, $offset);
+    }
+
+    /**
+     * Returns the offset working day in England and Wales from today
+     *
+     * @param integer   $offset Working days to count
+     *
+     * @access public
+     * @return integer
+     */
+    public function workingDaysFromToday($offset = 1)
+    {
+        return $this->workingDaysFrom(null, $offset);
+    }
+
+    /**
+     * Returns the next working day in England and Wales from date specified
+     * using date interval to calculate days ahead
+     *
+     * @param \DateTime $date   Start date
+     * @param integer   $offset Working days to count
+     *
+     * @access public
+     * @return integer
+     */
+    public function workingDaysFromWithInterval(
+        \DateTime $date,
+        \DateInterval $interval
+    ) {
+        $start = clone $date;
+        $start->setTime(0, 0, 0);
+
+        $finish = clone $date;
+        $finish->add($interval);
+
+        $hours = intval($finish->format('H'));
+        $minutes = intval($finish->format('i'));
+        $seconds = intval($finish->format('s'));
+
+        $date->setTime($hours, $minutes, $seconds);
+
+        $finish->setTime(0, 0, 0);
+
+        $difference = $start->diff($finish);
+
+        $offset = intval($difference->format('%r%d'));
+
+        return $this->getWorkingDayFromDateWithOffset($date, $offset);
+    }
+
+    /**
+     * Returns number of working days in England and Wales until date specified
+     *
+     * @param \DateTime $date Finish date
+     *
+     * @access public
+     * @return integer
+     */
+    public function workingDaysUntil(\DateTime $finish)
+    {
+        return $this->workingDaysBetween(new \DateTime(), $finish);
+    }
+
+    /**
+     * Returns array of bank holidays in format specified for the year
+     *
+     * @param string $year
+     *
+     * @access public
      * @return array
      */
     protected function getBankHolidays($year)
@@ -154,11 +196,35 @@ class WorkingDays
     }
 
     /**
-     * @param \DateTime $endDay
-     * @return int
+     * Returns the offset working day in England and Wales from date specified
+     *
+     * @param \DateTime $date   Start date
+     * @param integer   $offset Working days to count
+     *
+     * @access public
+     * @return \DateTime
      */
-    public function workingDaysUntil(\DateTime $endDay)
+    protected function getWorkingDayFromDateWithOffset(\DateTime $date, $offset)
     {
-        return $this->workingDaysBetween(new \DateTime(), $endDay);
+        $counter = 0;
+        $current = clone $date;
+
+        while ($counter !== $offset) {
+            if ($offset < 0) {
+                $current->modify('-1 day');
+            } else {
+                $current->modify('+1 day');
+            }
+
+            if ($this->isWorkingDay($current)) {
+                if ($offset < 0) {
+                    $counter--;
+                } else {
+                    $counter++;
+                }
+            }
+        }
+
+        return $current;
     }
 }

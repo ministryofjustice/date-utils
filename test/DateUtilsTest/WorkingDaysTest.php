@@ -2,206 +2,115 @@
 
 namespace DateUtilsTest;
 
-
 use DateUtils\WorkingDays;
 
 class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 {
-
-    protected $bankHolidays;
-
-    /**
-     * @var WorkingDays
-     */
     protected $workingDays;
 
     public function setUp()
     {
-        $this->bankHolidays = include('config/module.config.php');
-        $this->workingDays = new WorkingDays($this->bankHolidays);
-    }
-
-    public function testWorkingDaysFromToday()
-    {
-        $result = $this->workingDays->workingDaysFromToday(1);
-        $diff   = $result->diff(\DateTime::createFromFormat('d/m/Y h:i:s', date('d/m/Y 00:00:00')));
-        $this->assertTrue($diff->days >= 1);
-    }
-
-    public function testWorkingDaysNoArguments()
-    {
-        $result = $this->workingDays->workingDaysFrom();
-        $diff   = $result->diff(\DateTime::createFromFormat('d/m/Y h:i:s', date('d/m/Y 00:00:00')));
-        $this->assertTrue($diff->days >= 1);
-    }
-
-    public function testWorkingDays()
-    {
-        $expected = \DateTime::createFromFormat('d/m/Y', '02/05/2014');
-
-        $result = $this->workingDays->workingDaysFrom(
-            \DateTime::createFromFormat('d/m/Y', '01/05/2014'),
-            1
-        );
-
-        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
-    }
-
-    /**
-     * know offset, friday, bank holiday monday, we expect tuesday the 6th
-     */
-    public function testWorkingDaysFromWithBankHoliday()
-    {
-        $expected = \DateTime::createFromFormat('d/m/Y', '06/05/2014');
-
-        $result = $this->workingDays->workingDaysFrom(
-            \DateTime::createFromFormat('d/m/Y', '02/05/2014'),
-            1
-        );
-
-        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
-    }
-
-    /**
-     * know offset, we expect it to be a working month of 20 days
-     */
-    public function testWorkingDaysForMay2014()
-    {
-        $expected = \DateTime::createFromFormat('d/m/Y', '30/05/2014');
-
-        $result = $this->workingDays->workingDaysFrom(
-            \DateTime::createFromFormat('d/m/Y', '30/04/2014'),
-            20
-        );
-
-        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
-    }
-
-    /**
-     * know offset, we expect it to be a working month of 20 days
-     */
-    public function testWorkingDaysStartingOnNewYears()
-    {
-        $expected = \DateTime::createFromFormat('d/m/Y', '02/01/2014');
-
-        $result = $this->workingDays->workingDaysFrom(
-            \DateTime::createFromFormat('d/m/Y', '01/01/2014'),
-            1
-        );
-
-        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
-    }
-
-    public function testWorkingDaysWrapYears()
-    {
-        $expected = \DateTime::createFromFormat('d/m/Y', '07/01/2015');
-
-        $result = $this->workingDays->workingDaysFrom(
-            \DateTime::createFromFormat('d/m/Y', '30/12/2014'),
-            5
-        );
-
-        $this->assertEquals($expected->format('d/m/Y'), $result->format('d/m/Y'));
-
+        $config = include('config/module.config.php');
+        $this->workingDays = new WorkingDays($config);
     }
 
     public function testWorkingDaysBetween()
     {
-        $expected = 5;
+        $start = new \DateTime('2015-06-02');
+        $finish = new \DateTime('2015-06-04');
+
+        $output = $this->workingDays->workingDaysBetween($start, $finish);
+
+        $this->assertEquals(2, $output);
+    }
+
+    public function testWorkingDaysFromToday()
+    {
+        $expected = new \DateTime();
+        $output = $this->workingDays->workingDaysFromToday();
+
+        $this->assertTrue($output->diff($expected)->days >= 1);
+    }
+
+    public function testWorkingDaysFromWithDateAndInterval()
+    {
+        $expected = new \DateTime('2015-06-04');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-06-02'), 'P2D');
 
         $this->assertEquals(
-            $expected,
-            $this->workingDays->workingDaysBetween(
-                \DateTime::createFromFormat('d/m/Y', '30/12/2014'),
-                \DateTime::createFromFormat('d/m/Y', '07/01/2015')
-            )
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
         );
     }
 
-    /**
-     * Will return 0 as we work on from the next working day on all our calculations, tomorrow is < 24 hours
-     */
-    public function testWorkingDaysTillTomorrow()
+    public function testWorkingDaysFromWithDateAndIntervalWraps()
     {
-        $expected = 0;
+        $expected = new \DateTime('2015-06-04 00:00:59');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-06-03 23:00:59'), 'PT1H');
 
-        $today = new \DateTime();
-        $tomorrow = $today->modify('+1 day');
         $this->assertEquals(
-            $expected,
-            $this->workingDays->workingDaysBetween(
-                $today,
-                $tomorrow
-            )
+            $expected->format('Y-m-d H:i:s'),
+            $output->format('Y-m-d H:i:s')
         );
     }
 
-    public function testIsWorkingDayReturnsFalse()
+    public function testWorkingDaysFromWithDateAndNegOffset()
     {
-        $expected = date('Y-m-d', strtotime('1 January'));
-        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+        $expected = new \DateTime('2015-06-02');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-06-04'), -2);
 
-        $this->assertFalse($this->workingDays->isWorkingDay($expected));
+        $this->assertEquals(
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
+        );
     }
 
-    public function testIsWorkingDayReturnsTrue()
+    public function testWorkingDaysFromWithDateAndNegOffsetOverBankHolWeekend()
     {
-        $expected = date('Y-m-d', strtotime('first monday of February'));
-        $expected = \DateTime::createFromFormat('Y-m-d', $expected);
+        $expected = new \DateTime('2015-05-21');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-05-27'), -3);
 
-        $this->assertTrue($this->workingDays->isWorkingDay($expected));
+        $this->assertEquals(
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
+        );
     }
 
-    public function testWorkingDayOffset()
+    public function testWorkingDaysFromWithDateAndOffset()
     {
-        $expectedFromOffset = $this->workingDays->workingDaysFromToday('P10D');
-        $expected           = $this->workingDays->workingDaysFromToday(10);
-        $this->assertEquals($expected, $expectedFromOffset);
+        $expected = new \DateTime('2015-06-04');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-06-02'), 2);
+
+        $this->assertEquals(
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
+        );
     }
 
-    public function testWorkingDaysOffsetNoDate()
+    public function testWorkingDaysFromWithDateAndOffsetOverBankHolWeekend()
     {
-        $interval = 'PT30M';
-        $expected = (new \DateTime())->add(new \DateInterval($interval));
-        $result = $this->workingDays->workingDaysFromToday($interval);
+        $expected = new \DateTime('2015-05-27');
+        $output = $this->workingDays
+            ->workingDaysFrom(new \DateTime('2015-05-21'), 3);
 
-        $this->assertEquals($expected, $result);
-
-    }
-
-    public function testNegativeDays()
-    {
-        $offset = -1;
-        $expectedMessage = 'Cannot calculate working days on a negative offset.';
-
-        try {
-            $this->workingDays->workingDaysFromToday($offset);
-        }
-        catch(\Exception $e) {
-            $this->assertTrue($e instanceof \LogicException);
-            $this->assertEquals($expectedMessage, $e->getMessage());
-        }
-    }
-
-    public function testWorkingDaysWithOffsetWraps()
-    {
-        $interval = 'PT1H';
-        $dateStamp = \DateTime::createFromFormat('d/m/Y H:i:s', '04/07/2014 23:00:59');
-
-        $expected = \DateTime::createFromFormat('d/m/Y H:i:s', '07/07/2014 00:00:00');
-        $this->assertEquals($expected, $this->workingDays->workingDaysFrom($dateStamp, $interval));
+        $this->assertEquals(
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
+        );
     }
 
     public function testWorkingDaysUntil()
     {
-        $startDay = new \DateTime();
-        $endDay = \DateTime::createFromFormat('d-m-Y', date('d-m-Y', strtotime('+ 2 days')));
+        $finish = new \DateTime();
+        $finish->modify('+7 days');
 
-        $expectedOffset = $this->workingDays->workingDaysBetween($startDay, $endDay);
+        $output = $this->workingDays->workingDaysUntil($finish);
 
-        $this->assertEquals(
-            $expectedOffset,
-            $this->workingDays->workingDaysUntil($endDay)
-        );
+        $this->assertTrue($output >= 3);
     }
 }
