@@ -125,7 +125,7 @@ class WorkingDays
      * @param integer   $offset Working days to count
      *
      * @access public
-     * @return integer
+     * @return \DateTime
      */
     public function workingDaysFromToday($offset = 1)
     {
@@ -140,7 +140,7 @@ class WorkingDays
      * @param \DateInterval $interval Interval to add to date
      *
      * @access public
-     * @return integer
+     * @return \DateTime
      */
     public function workingDaysFromWithInterval(
         \DateTime $date,
@@ -223,8 +223,8 @@ class WorkingDays
     /**
      * Increments or decrements the counter depending on offset
      *
-     * @param interger $counter Counter
-     * @param integer  offset   Working days to count
+     * @param integer $counter Counter
+     * @param integer $offset  Working days to count
      *
      * @access protected
      * @return integer
