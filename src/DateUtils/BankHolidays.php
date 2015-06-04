@@ -200,9 +200,9 @@ final class BankHolidays
      * Merges other specified holidays for the year specified into holidays
      * array
      *
-     * @param integer $year                Year for adding other holidays
-     * @param array   $other               Other holidays to add
-     * @param array   $holidays<\DateTime> Existing holidays
+     * @param integer $year     Year for adding other holidays
+     * @param array   $other    Other holidays to add
+     * @param array   $holidays Existing holidays
      *
      * @access protected
      * @return array<\DateTime>

@@ -12,7 +12,7 @@ Automatically generates UK bank holidays, these can be overridden via config
 Basic example
 
 ```php
-$Date = WorkingDays::workingDaysFrom(new \DateTime('2014-01-01'), 1);
+$date = WorkingDays::workingDaysFrom(new \DateTime('2014-01-01'), 1);
 
-//$Date will be set to 2014-01-02 which is the next working day
+//$date will be set to 2014-01-02 which is the next working day
 ```
