@@ -265,6 +265,10 @@ class WorkingDays
      */
     public function calculateWorkingDaysInThePastFromDate(\DateTime $date, $daysAgo)
     {
+        if ($date === null) {
+            $date = new \DateTime();
+        }
+        
         $counter = 1;
         for ($i = 1; $i <= $daysAgo; $i++) {
             $clonedDate = clone($date);
