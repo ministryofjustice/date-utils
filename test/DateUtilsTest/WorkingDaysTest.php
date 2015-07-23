@@ -6,6 +6,9 @@ use DateUtils\WorkingDays;
 
 class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var WorkingDays
+     */
     protected $workingDays;
 
     public function setUp()
@@ -112,5 +115,41 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $output = $this->workingDays->workingDaysUntil($finish);
 
         $this->assertTrue($output >= 3);
+    }
+
+    public function testWorkingDaysWithNegativeOffset()
+    {
+        $expectedDate = new \DateTime('20 July 2015');
+        $currentDate = new \DateTime('23 July 2015');
+        $offset = -3;
+
+        $this->assertEquals(
+            $expectedDate->format('d-m-Y'),
+            $this->workingDays->workingDaysFrom($currentDate, $offset)->format('d-m-Y')
+        );
+    }
+
+    public function workingDaysInThePastAliasReturnsCorrectDate()
+    {
+        $expectedDate = new \DateTime('20 July 2015');
+        $currentDate = new \DateTime('23 July 2015');
+        $offset = -3;
+
+        $this->assertEquals(
+            $expectedDate->format('d-m-Y'),
+            $this->workingDays->workingDaysInThePast($currentDate, $offset)->format('d-m-Y')
+        );
+    }
+
+    public function testDefaultOffsetReturnsExpectedDateInPast()
+    {
+
+        $currentDate = new \DateTime('23 July 2015');
+        $expectedDate = new \DateTime('22 July 2015');
+
+        $this->assertEquals(
+            $expectedDate->format('d-m-Y'),
+            $this->workingDays->workingDaysInThePast($currentDate)->format('d-m-Y')
+        );
     }
 }

@@ -120,6 +120,24 @@ class WorkingDays
     }
 
     /**
+     * @param integer    $daysInPast
+     * @param \DateTime  $date
+     * @return \DateTime
+     *
+     * Alias method so that someone can easily find a day in the past
+     */
+    public function workingDaysInThePast(\DateTime $date = null, $daysInPast = 1)
+    {
+        if (null === $date) {
+            $date = new \DateTime();
+        }
+
+        // Ensure our offset is negative
+        $daysInPast = abs($daysInPast)*-1;
+        return $this->workingDaysFrom($date, $daysInPast);
+    }
+
+    /**
      * Returns the offset working day in England and Wales from today
      *
      * @param integer   $offset Working days to count
