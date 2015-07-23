@@ -113,4 +113,13 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($output >= 3);
     }
+
+    public function testCalculateWorkingDayInThePast()
+    {
+        $dateToday = new \DateTime();
+
+        $date11workingDaysAgo = $this->workingDays->calculateWorkingDaysInThePastFromDate($dateToday, 11);
+        $date = $this->workingDays->workingDaysFrom($date11workingDaysAgo, 11);
+        $this->assertEquals($date, $dateToday);
+    }
 }
