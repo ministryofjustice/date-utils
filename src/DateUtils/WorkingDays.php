@@ -257,4 +257,22 @@ class WorkingDays
             $date->modify('+1 day');
         }
     }
+
+    /**
+     * @param \DateInterval $interval1
+     * @param \DateInterval $interval2
+     *
+     * @return bool|\DateInterval
+     */
+    public function addIntervals(\DateInterval $interval1, \DateInterval $interval2)
+    {
+        $baseDate = new \DateTime('1/1/1970 00:00:00');
+        $offsetDate = clone $baseDate;
+
+        $offsetDate->add($interval1)->add($interval2);
+
+        $diffDateInterval = $baseDate->diff($offsetDate);
+
+        return $diffDateInterval;
+    }
 }

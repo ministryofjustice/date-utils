@@ -113,4 +113,30 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($output >= 3);
     }
+
+    public function testAddIntervalsCanAdd()
+    {
+        $interval1 = new \DateInterval('P1D');
+        $interval2 = new \DateInterval('P2D');
+
+        $actualDiff = $this->workingDays->addIntervals($interval1, $interval2);
+
+        $actualDateString = $actualDiff->format('%R%D');
+        $expectedDateString = '+03';
+
+        $this->assertSame($expectedDateString, $actualDateString);
+    }
+
+    public function testAddIntervalsCanSubtract()
+    {
+        $interval1 = new \DateInterval('P1D');
+        $interval2 = \DateInterval::createFromDateString('-2 days');
+
+        $actualDiff = $this->workingDays->addIntervals($interval1, $interval2);
+
+        $actualDateString = $actualDiff->format('%R%D');
+        $expectedDateString = '-01';
+
+        $this->assertSame($expectedDateString, $actualDateString);
+    }
 }
