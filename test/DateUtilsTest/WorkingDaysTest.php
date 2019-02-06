@@ -114,6 +114,18 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($output >= 3);
     }
 
+    public function testWorkingDaysIncludingToday()
+    {
+        $expected = new \DateTime('2015-06-03');
+        $output = $this->workingDays
+            ->getWorkingDaysIncludingToday(new \DateTime('2015-06-02'), 2);
+
+        $this->assertEquals(
+            $expected->format('Y-m-d'),
+            $output->format('Y-m-d')
+        );
+    }
+
     public function testAddIntervalsCanAdd()
     {
         $interval1 = new \DateInterval('P1D');
