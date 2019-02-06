@@ -181,6 +181,31 @@ class WorkingDays
     }
 
     /**
+     * Returns the offset working day in England and Wales from date specified inclusive of today
+     *
+     * @param \DateTime $date   Start date
+     * @param integer   $offset Working days to count
+     *
+     * @access public
+     * @return \DateTime
+     */
+    public function getWorkingDaysIncludingToday(\DateTime $date, $offset)
+    {
+        $counter = 0;
+        $current = clone $date;
+
+        while ($counter < $offset) {
+            $this->shiftDate($current, $offset);
+
+            if ($this->isWorkingDay($current)) {
+                $counter = $this->shiftCounter($counter, $offset);
+            }
+        }
+
+        return $current;
+    }
+
+    /**
      * Returns array of bank holidays in format specified for the year
      *
      * @param string $year
