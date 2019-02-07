@@ -191,10 +191,10 @@ class WorkingDays
      */
     public function getWorkingDaysIncludingToday(\DateTime $date, $offset)
     {
-        $counter = 0;
+        $counter = 1;
         $current = clone $date;
 
-        while ($counter < $offset) {
+        while ($counter !== $offset) {
             $this->shiftDate($current, $offset);
 
             if ($this->isWorkingDay($current)) {
