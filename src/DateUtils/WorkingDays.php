@@ -98,7 +98,7 @@ class WorkingDays
      * Returns the offset working day in England and Wales from date specified
      *
      * @param \DateTime $date   Start date
-     * @param integer   $offset Working days to count
+     * @param integer|string $offset Working days diff - can be plus or minus, integer or interval string
      *
      * @access public
      * @return \DateTime

@@ -83,6 +83,15 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function test_workingDaysFrom_christmas_day_plus_four_days_is_monday_week_next_year()
+    {
+        $expected = new DateTime('2021-01-04 14:27:20');
+        $christmas = new DateTime('2020-12-25 14:27:20');
+        $actual = $this->workingDays->workingDaysFrom($christmas, 4);
+
+        self::assertEquals($expected, $actual);
+    }
+
     public function test_workingDaysFrom_tuesday_plus_two_days_offset_is_thursday()
     {
         $expected = new DateTime('2015-06-04');
