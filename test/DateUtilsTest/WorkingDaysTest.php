@@ -17,7 +17,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         $this->workingDays = new WorkingDays($config);
     }
 
-    public function testWorkingDaysBetween()
+    public function test_workingDaysBetween_tuesday_and_thursday_is_two()
     {
         $start = new DateTime('2015-06-02');
         $finish = new DateTime('2015-06-04');
@@ -27,15 +27,15 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         self::assertEquals(2, $output);
     }
 
-    public function testWorkingDaysFromToday()
+    public function test_workingDaysFrom_today_is_always_at_least_one_day()
     {
-        $expected = new DateTime();
+        $today = new DateTime();
         $output = $this->workingDays->workingDaysFromToday();
 
-        self::assertTrue($output->diff($expected)->days >= 1);
+        self::assertTrue($output->diff($today)->days >= 1);
     }
 
-    public function testWorkingDaysFromWithDateAndInterval()
+    public function test_workingDaysFrom_tuesday_plus_two_day_interval_is_thursday()
     {
         $expected = new DateTime('2015-06-04');
         $output = $this->workingDays
@@ -47,7 +47,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysFromWithDateAndIntervalWraps()
+    public function test_workingDaysFrom_wednesday_230059_hours_plus_one_hour_is_thursday_000059()
     {
         $expected = new DateTime('2015-06-04 00:00:59');
         $output = $this->workingDays
@@ -59,7 +59,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysFromWithDateAndNegOffset()
+    public function test_workingDaysFrom_thursday_minus_two_days_offset_is_tuesday()
     {
         $expected = new DateTime('2015-06-02');
         $output = $this->workingDays
@@ -71,7 +71,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysFromWithDateAndNegOffsetOverBankHolWeekend()
+    public function test_workingDaysFrom_wednesday_minus_three_days_offset_over_bank_holiday_weekend_is_thursday()
     {
         $expected = new DateTime('2015-05-21');
         $output = $this->workingDays
@@ -83,7 +83,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysFromWithDateAndOffset()
+    public function test_workingDaysFrom_tuesday_plus_two_days_offset_is_thursday()
     {
         $expected = new DateTime('2015-06-04');
         $output = $this->workingDays
@@ -95,7 +95,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysFromWithDateAndOffsetOverBankHolWeekend()
+    public function test_workingDaysFrom_thursday_plus_three_days_offset_is_wednesday()
     {
         $expected = new DateTime('2015-05-27');
         $output = $this->workingDays
@@ -107,7 +107,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWorkingDaysUntil()
+    public function test_workingDaysUntil_week_from_today_is_at_least_three()
     {
         $finish = new DateTime();
         $finish->modify('+7 days');
@@ -117,7 +117,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         self::assertTrue($output >= 3);
     }
 
-    public function testWorkingDaysIncludingToday()
+    public function test_workingDaysIncludingToday_from_tuesday_with_two_days_offset_is_wednesday()
     {
         $expected = new DateTime('2015-06-03');
         $output = $this->workingDays
@@ -129,7 +129,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testAddIntervalsCanAdd()
+    public function test_addIntervals_1_day_plus_two_days_is_three()
     {
         $interval1 = new DateInterval('P1D');
         $interval2 = new DateInterval('P2D');
@@ -142,7 +142,7 @@ class WorkingDaysTest extends PHPUnit_Framework_TestCase
         self::assertSame($expectedDateString, $actualDateString);
     }
 
-    public function testAddIntervalsCanSubtract()
+    public function test_addIntervals_one_day_minus_two_days_is_minus_one()
     {
         $interval1 = new DateInterval('P1D');
         $interval2 = DateInterval::createFromDateString('-2 days');
