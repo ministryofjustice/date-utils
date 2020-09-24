@@ -11,3 +11,5 @@ if (file_exists($file = $vendorDir . '/autoload.php')) {
 } else {
     throw new \RuntimeException("Not found composer autoload");
 }
+
+date_default_timezone_set('Europe/London');

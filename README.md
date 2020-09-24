@@ -16,3 +16,13 @@ $date = WorkingDays::workingDaysFrom(new \DateTime('2014-01-01'), 1);
 
 //$date will be set to 2014-01-02 which is the next working day
 ```
+
+### Tests
+
+Build container so we can run PHP 5.4
+
+    docker-compose --project-name moj-date-utils build test
+    
+Run unit tests
+
+    docker-compose --project-name moj-date-utils run test

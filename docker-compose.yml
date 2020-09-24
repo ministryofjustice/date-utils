@@ -1,0 +1,14 @@
+---
+version: "3.6"
+
+services:
+
+  test:
+    build: .
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command:
+      - /app/vendor/bin/phpunit
+      - -c
+      - /app/test/phpunit.xml

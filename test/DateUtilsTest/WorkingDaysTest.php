@@ -2,9 +2,12 @@
 
 namespace DateUtilsTest;
 
+use DateInterval;
+use DateTime;
 use DateUtils\WorkingDays;
+use PHPUnit_Framework_TestCase;
 
-class WorkingDaysTest extends \PHPUnit_Framework_TestCase
+class WorkingDaysTest extends PHPUnit_Framework_TestCase
 {
     protected $workingDays;
 
@@ -16,29 +19,29 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysBetween()
     {
-        $start = new \DateTime('2015-06-02');
-        $finish = new \DateTime('2015-06-04');
+        $start = new DateTime('2015-06-02');
+        $finish = new DateTime('2015-06-04');
 
         $output = $this->workingDays->workingDaysBetween($start, $finish);
 
-        $this->assertEquals(2, $output);
+        self::assertEquals(2, $output);
     }
 
     public function testWorkingDaysFromToday()
     {
-        $expected = new \DateTime();
+        $expected = new DateTime();
         $output = $this->workingDays->workingDaysFromToday();
 
-        $this->assertTrue($output->diff($expected)->days >= 1);
+        self::assertTrue($output->diff($expected)->days >= 1);
     }
 
     public function testWorkingDaysFromWithDateAndInterval()
     {
-        $expected = new \DateTime('2015-06-04');
+        $expected = new DateTime('2015-06-04');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-06-02'), 'P2D');
+            ->workingDaysFrom(new DateTime('2015-06-02'), 'P2D');
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -46,11 +49,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysFromWithDateAndIntervalWraps()
     {
-        $expected = new \DateTime('2015-06-04 00:00:59');
+        $expected = new DateTime('2015-06-04 00:00:59');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-06-03 23:00:59'), 'PT1H');
+            ->workingDaysFrom(new DateTime('2015-06-03 23:00:59'), 'PT1H');
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d H:i:s'),
             $output->format('Y-m-d H:i:s')
         );
@@ -58,11 +61,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysFromWithDateAndNegOffset()
     {
-        $expected = new \DateTime('2015-06-02');
+        $expected = new DateTime('2015-06-02');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-06-04'), -2);
+            ->workingDaysFrom(new DateTime('2015-06-04'), -2);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -70,11 +73,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysFromWithDateAndNegOffsetOverBankHolWeekend()
     {
-        $expected = new \DateTime('2015-05-21');
+        $expected = new DateTime('2015-05-21');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-05-27'), -3);
+            ->workingDaysFrom(new DateTime('2015-05-27'), -3);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -82,11 +85,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysFromWithDateAndOffset()
     {
-        $expected = new \DateTime('2015-06-04');
+        $expected = new DateTime('2015-06-04');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-06-02'), 2);
+            ->workingDaysFrom(new DateTime('2015-06-02'), 2);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -94,11 +97,11 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysFromWithDateAndOffsetOverBankHolWeekend()
     {
-        $expected = new \DateTime('2015-05-27');
+        $expected = new DateTime('2015-05-27');
         $output = $this->workingDays
-            ->workingDaysFrom(new \DateTime('2015-05-21'), 3);
+            ->workingDaysFrom(new DateTime('2015-05-21'), 3);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -106,21 +109,21 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkingDaysUntil()
     {
-        $finish = new \DateTime();
+        $finish = new DateTime();
         $finish->modify('+7 days');
 
         $output = $this->workingDays->workingDaysUntil($finish);
 
-        $this->assertTrue($output >= 3);
+        self::assertTrue($output >= 3);
     }
 
     public function testWorkingDaysIncludingToday()
     {
-        $expected = new \DateTime('2015-06-03');
+        $expected = new DateTime('2015-06-03');
         $output = $this->workingDays
-            ->getWorkingDaysIncludingToday(new \DateTime('2015-06-02'), 2);
+            ->getWorkingDaysIncludingToday(new DateTime('2015-06-02'), 2);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expected->format('Y-m-d'),
             $output->format('Y-m-d')
         );
@@ -128,27 +131,27 @@ class WorkingDaysTest extends \PHPUnit_Framework_TestCase
 
     public function testAddIntervalsCanAdd()
     {
-        $interval1 = new \DateInterval('P1D');
-        $interval2 = new \DateInterval('P2D');
+        $interval1 = new DateInterval('P1D');
+        $interval2 = new DateInterval('P2D');
 
         $actualDiff = $this->workingDays->addIntervals($interval1, $interval2);
 
         $actualDateString = $actualDiff->format('%R%D');
         $expectedDateString = '+03';
 
-        $this->assertSame($expectedDateString, $actualDateString);
+        self::assertSame($expectedDateString, $actualDateString);
     }
 
     public function testAddIntervalsCanSubtract()
     {
-        $interval1 = new \DateInterval('P1D');
-        $interval2 = \DateInterval::createFromDateString('-2 days');
+        $interval1 = new DateInterval('P1D');
+        $interval2 = DateInterval::createFromDateString('-2 days');
 
         $actualDiff = $this->workingDays->addIntervals($interval1, $interval2);
 
         $actualDateString = $actualDiff->format('%R%D');
         $expectedDateString = '-01';
 
-        $this->assertSame($expectedDateString, $actualDateString);
+        self::assertSame($expectedDateString, $actualDateString);
     }
 }
