@@ -2,6 +2,7 @@
     "name" : "ministryofjustice/date-utils",
     "description" : "Utility classes for working day and bank holiday calculations",
     "type" : "library",
+    "license": "MIT",
     "require" : {
         "php" : ">=5.4"
     },
