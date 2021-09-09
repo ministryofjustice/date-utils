@@ -1,3 +1,7 @@
+**This repository is archived and no longer maintained. Instead, we recommend using [Carbon](https://packagist.org/packages/nesbot/carbon) with the [business-day mixin](https://packagist.org/packages/cmixin/business-day) which supports all of the functionality of the date-utils library, but with a better API.**
+
+---
+
 # Date Utils
 
 [![Build Status](https://travis-ci.org/ministryofjustice/date-utils.svg?branch=master)](https://travis-ci.org/ministryofjustice/date-utils)
